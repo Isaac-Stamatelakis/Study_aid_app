@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="persian_indigo">#27187E</color>
+    <color name="cornflower_blue">#758BFD</color>
+    <color name="periwinkle">#AEB8FE</color>
+    <color name="antiflash_white">#F1F2F6</color>
+    <color name="UT_orange">#FF8600</color>
 </resources>
