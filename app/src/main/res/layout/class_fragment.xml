@@ -3,36 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Fragments.ClassFragment.ClassFragment">
+    android:layout_height="match_parent">
 
-    <CalendarView
-        android:id="@+id/class_calender"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="40dp"
+    <EditText
+        android:id="@+id/add_class_fragment_class_search"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp"
-        android:theme="@style/Theme.CustomCalender"
-        android:dateTextAppearance="@style/Theme.CustomCalenderDateText"
-        android:weekDayTextAppearance="@style/Theme.CustomCalenderWeekText"
+        android:layout_marginTop="50dp"
+        android:clickable="true"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Search Class"
+        android:textColorHint="@color/black"
+
         />
 
     <ListView
-        android:id="@+id/class_fragment_class_list"
-        android:layout_width="match_parent"
+        android:id="@+id/add_class_fragment_class_list"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/class_calender"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="10.0sp"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/CLASS_FRAGMENT_add_class_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="48dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="@+id/add_class_fragment_class_search" />
 
+    <Button
+        android:id="@+id/add_class_fragment_manual_button"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:text="Add Without Search"
+        app:layout_constraintBottom_toBottomOf="@+id/add_class_fragment_class_search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.693"
+        app:layout_constraintStart_toEndOf="@+id/add_class_fragment_class_search" />
 </androidx.constraintlayout.widget.ConstraintLayout>

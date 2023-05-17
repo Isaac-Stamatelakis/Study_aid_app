@@ -1,11 +1,10 @@
-package com.example.myapplication.Fragments.ClassFragment;
+package com.example.myapplication.Fragments.Classes.SchoolMaterial;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,13 +13,13 @@ import com.example.myapplication.R;
 
 import java.util.ArrayList;
 
-public class ClassCustomerList extends ArrayAdapter<SchoolClass> {
-    private ArrayList<SchoolClass> classes;
+public class StudyMaterialArrayAdapter extends ArrayAdapter<StudyMaterial> {
+    private ArrayList<StudyMaterial> studyMaterials;
     private Context context;
 
-    public ClassCustomerList(Context context, ArrayList<SchoolClass> classes) {
-        super(context,0,classes);
-        this.classes = classes;
+    public StudyMaterialArrayAdapter(Context context, ArrayList<StudyMaterial> studyMaterials) {
+        super(context,0,studyMaterials);
+        this.studyMaterials = studyMaterials;
         this.context = context;
     }
 
@@ -33,10 +32,8 @@ public class ClassCustomerList extends ArrayAdapter<SchoolClass> {
             view = LayoutInflater.from(context).inflate(R.layout.class_content, parent,false);
         }
 
-        SchoolClass schoolClass = this.classes.get(position);
+        StudyMaterial studyMaterial = this.studyMaterials.get(position);
 
-        TextView class_content_textview = view.findViewById(R.id.class_content_text);
-        class_content_textview.setText(schoolClass.getSubject().concat(" ").concat(schoolClass.getNumber()));
         return view;
     }
 
