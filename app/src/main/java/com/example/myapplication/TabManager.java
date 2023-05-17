@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.myapplication.Fragments.ClassFragment.ClassFragment;
+import com.example.myapplication.Fragments.Classes.ClassSelectorFragment;
 import com.example.myapplication.Fragments.ProfileFragment;
 import com.example.myapplication.Fragments.SocialFragment;
 
@@ -30,7 +30,7 @@ public class TabManager {
                 transactionTAG = "Social";
                 break;
             case 1:
-                currentFragment = new ClassFragment();
+                currentFragment = new ClassSelectorFragment();
                 transactionTAG = "Classes";
                 break;
             case 2:
