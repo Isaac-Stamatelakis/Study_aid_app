@@ -1,10 +1,11 @@
-package com.example.myapplication.Fragments.Classes.SchoolMaterial;
+package com.example.myapplication.Fragments.Classes.StudyMaterial;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,12 +30,16 @@ public class StudyMaterialArrayAdapter extends ArrayAdapter<StudyMaterial> {
         View view = convertView;
 
         if(view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.class_content, parent,false);
+            view = LayoutInflater.from(context).inflate(R.layout.study_material_content, parent,false);
         }
 
         StudyMaterial studyMaterial = this.studyMaterials.get(position);
-
+        TextView studyMaterialTitleText = view.findViewById(R.id.study_material_text);
+        studyMaterialTitleText.setText(studyMaterial.getTitle());
         return view;
     }
 
+    public void setStudyMaterials(ArrayList<StudyMaterial> studyMaterials) {
+        this.studyMaterials = studyMaterials;
+    }
 }

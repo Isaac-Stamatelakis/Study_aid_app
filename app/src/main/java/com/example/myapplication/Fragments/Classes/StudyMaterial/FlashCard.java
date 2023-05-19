@@ -1,8 +1,8 @@
-package com.example.myapplication.Fragments.Classes.SchoolMaterial;
+package com.example.myapplication.Fragments.Classes.StudyMaterial;
 
 public class FlashCard extends StudyMaterial {
-    public FlashCard(String title, String content) {
-        super(title, content);
+    public FlashCard(String title, String content, String dbID) {
+        super(title, content, dbID);
     }
     /*
     Format:

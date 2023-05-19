@@ -28,11 +28,14 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/CLASS_FRAGMENT_add_class_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="48dp"
+        android:layout_marginLeft="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:src="@android:drawable/ic_input_add"
+        android:backgroundTint="@color/UT_orange"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

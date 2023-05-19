@@ -20,6 +20,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.ui.AppBarConfiguration;
 
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.example.myapplication.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         // Tab Manager
         tabLayout.selectTab(tabLayout.getTabAt(0));
         tabManager = new com.example.myapplication.TabManager(this);
+
 
         this.handleAndroidID();
 

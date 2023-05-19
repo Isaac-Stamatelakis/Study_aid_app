@@ -5,39 +5,93 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/add_class_fragment_class_search"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="50dp"
-        android:clickable="true"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Search Class"
-        android:textColorHint="@color/black"
-
-        />
-
-    <ListView
-        android:id="@+id/add_class_fragment_class_list"
+    <ImageView
+        android:id="@+id/class_fragment_note_selector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        android:layout_marginTop="70dp"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/small_orange_rect"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/add_class_fragment_class_search" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
-    <Button
-        android:id="@+id/add_class_fragment_manual_button"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:text="Add Without Search"
-        app:layout_constraintBottom_toBottomOf="@+id/add_class_fragment_class_search"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Notes"
+        app:layout_constraintBottom_toBottomOf="@+id/class_fragment_note_selector"
+        app:layout_constraintEnd_toEndOf="@+id/class_fragment_note_selector"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="@+id/class_fragment_note_selector"
+        app:layout_constraintTop_toTopOf="@+id/class_fragment_note_selector"
+        app:layout_constraintVertical_bias="0.384" />
+
+    <ImageView
+        android:id="@+id/class_fragment_flashcard_selector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
+        android:src="@drawable/small_blue_rect"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.693"
-        app:layout_constraintStart_toEndOf="@+id/add_class_fragment_class_search" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Flashcards"
+        app:layout_constraintBottom_toBottomOf="@+id/class_fragment_flashcard_selector"
+        app:layout_constraintEnd_toEndOf="@+id/class_fragment_flashcard_selector"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="@+id/class_fragment_flashcard_selector"
+        app:layout_constraintTop_toTopOf="@+id/class_fragment_flashcard_selector"
+        app:layout_constraintVertical_bias="0.384" />
+    <ImageView
+        android:id="@+id/class_fragment_quiz_selector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
+        android:src="@drawable/small_blue_rect"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Quizzes"
+        app:layout_constraintBottom_toBottomOf="@+id/class_fragment_quiz_selector"
+        app:layout_constraintEnd_toEndOf="@+id/class_fragment_quiz_selector"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="@+id/class_fragment_quiz_selector"
+        app:layout_constraintTop_toTopOf="@+id/class_fragment_quiz_selector"
+        app:layout_constraintVertical_bias="0.384" />
+
+
+    <ListView
+        android:id="@+id/class_fragment_study_material_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="60dp"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintTop_toTopOf="@id/class_fragment_note_selector"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/class_fragment_add_studymaterial_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@android:drawable/ic_input_add"
+        android:backgroundTint="@color/UT_orange"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
