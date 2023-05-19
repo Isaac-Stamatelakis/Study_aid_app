@@ -26,6 +26,18 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".Fragments.Classes.StudyMaterial.Activities.NoteActivity"
+            >
+        </activity>
+        <activity
+            android:name=".Fragments.Classes.StudyMaterial.Activities.FlashCardActivity"
+            >
+        </activity>
+        <activity
+            android:name=".Fragments.Classes.StudyMaterial.Activities.QuizActivity"
+            >
+        </activity>
     </application>
 
 </manifest>
