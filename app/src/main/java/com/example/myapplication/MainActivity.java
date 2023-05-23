@@ -23,6 +23,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.example.myapplication.databinding.ActivityMainBinding;
+import com.example.myapplication.nInput.AddSingleTextDialogFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,6 +34,8 @@ import com.google.firebase.firestore.AggregateQuery;
 import com.google.firebase.firestore.AggregateQuerySnapshot;
 import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -40,6 +43,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,8 +64,9 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tab_manager);
 
         // Tab Manager
-        tabLayout.selectTab(tabLayout.getTabAt(0));
+        tabLayout.selectTab(tabLayout.getTabAt(1));
         tabManager = new com.example.myapplication.TabManager(this);
+        tabManager.switchFragment(1);
 
 
         this.handleAndroidID();
@@ -160,5 +165,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().popBackStack();
         }
     }
+
 
 }

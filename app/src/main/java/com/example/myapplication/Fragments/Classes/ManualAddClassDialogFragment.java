@@ -59,6 +59,7 @@ public class ManualAddClassDialogFragment extends DialogFragment {
                         }
                         Intent intent = new Intent().putExtras(bundle);
                         getTargetFragment().onActivityResult(getTargetRequestCode(), activity.RESULT_OK, intent);
+
                         dismiss();
 
                     }

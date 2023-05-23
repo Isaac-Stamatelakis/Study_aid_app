@@ -16,8 +16,9 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:windowSoftInputMode="stateVisible"
-            android:theme="@style/Theme.MyApplication.NoActionBar">
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.MyApplication.NoActionBar"
+            >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,11 +32,15 @@
             >
         </activity>
         <activity
-            android:name=".Fragments.Classes.StudyMaterial.Activities.FlashCardActivity"
-            >
+            android:exported="true"
+            android:name=".Fragments.Classes.StudyMaterial.Activities.FlashCardActivity">
+        <intent-filter>
+            <action android:name="com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.FlashCardActivity" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
-            android:name=".Fragments.Classes.StudyMaterial.Activities.QuizActivity"
+            android:name=".Fragments.Classes.StudyMaterial.Activities.QuizActivity.QuizActivity"
             >
         </activity>
     </application>
