@@ -6,7 +6,23 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-
+    <string name="major_info">Major</string>
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="education_level">Education_level</string>
+    <string name="name">Name</string>
+    <string name="profile">Profile</string>
+    <string name="profile_fragment_minor">Minor</string>
+    <string name="profile_fragment_school">School</string>
+    <string name="profile_fragment_year">Year</string>
+    <string name="profile_fragment_faculty">Faculty</string>
+    <string name="edit_profile_name">Name</string>
+    <string name="edit_profile_school">School(s)</string>
+    <string name="edit_profile_year">Year</string>
+    <string name="edit_profile_minor">Minor(s)</string>
+    <string name="edit_profile_major">Major(s)</string>
+    <string name="edit_profile_faculty">Faculty</string>
+    <string name="edit_profile_education_level">Education_level</string>
+    <string name="edit_profile_cancel">Cancel</string>
+    <string name="edit_profile_save">Save</string>
 </resources>

@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.myapplication.Fragments.Classes.ClassSelectorFragment;
-import com.example.myapplication.Fragments.ProfileFragment;
+import com.example.myapplication.Fragments.Profile.ProfileFragment;
 import com.example.myapplication.Fragments.SocialFragment;
 
 public class TabManager {

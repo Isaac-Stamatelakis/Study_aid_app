@@ -116,10 +116,12 @@ public class MainActivity extends AppCompatActivity {
                         Map<String, Object> userInfo = new HashMap<>();
                         userInfo.put("Major", Collections.emptyList());
                         userInfo.put("Minor", Collections.emptyList());
+                        userInfo.put("Name", null);
                         userInfo.put("Education_level", null);
                         userInfo.put("user_id", user_id);
-                        userInfo.put("School", null);
+                        userInfo.put("School", Collections.emptyList());
                         userInfo.put("Year", null);
+                        userInfo.put("Faculty", null);
                         CollectionReference classCollection = db.collection("Users");
                         String id = classCollection.document().getId();
                         classCollection.document(id).set(userInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
