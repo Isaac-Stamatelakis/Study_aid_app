@@ -1,12 +1,13 @@
 package com.example.myapplication.Fragments.Classes;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,41 +20,48 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.example.myapplication.Fragments.Classes.SchoolClass.SchoolClass;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.FlashCardActivity;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.NoteActivity;
-import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.QuizActivity;
+import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.QuizActivity.QuizActivity;
+import com.example.myapplication.Fragments.Classes.StudyMaterial.FlashCard;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Note;
+import com.example.myapplication.Fragments.Classes.StudyMaterial.Quiz;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.StudyMaterial;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.StudyMaterialArrayAdapter;
 import com.example.myapplication.R;
+import com.example.myapplication.nInput.AddSingleTextDialogFragment;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
 
-public class ClassFragment extends Fragment {
+public class ClassFragment extends Fragment{
     ListView studyMaterialList;
     String user_id;
     String mode;
     FirebaseFirestore db;
-    SchoolClass schoolClass;
     String schoolClassID;
     HashMap<String, StudyMaterial> flashCards;
     HashMap<String, StudyMaterial> notes;
     HashMap<String, StudyMaterial> quizzes;
-    ArrayList<String> studyMaterialIDs;
     StudyMaterialArrayAdapter studyMaterialArrayAdapter;
     HashMap<String, ImageView> modeSelectors;
     ArrayList<StudyMaterial> arrayAdapterList;
     FloatingActionButton addStudyMaterialButton;
+    ArrayList<ListenerRegistration> studyMaterialSnapshots;
+    Fragment thisFragment;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.class_fragment, container, false);
@@ -69,6 +77,8 @@ public class ClassFragment extends Fragment {
         user_id = (Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID));
         db = FirebaseFirestore.getInstance();
         schoolClassID = getArguments().get("ID").toString();
+        studyMaterialSnapshots = new ArrayList<>();
+        thisFragment = this;
 
         // Array Adapter
         flashCards = new HashMap<String, StudyMaterial>();
@@ -79,53 +89,13 @@ public class ClassFragment extends Fragment {
         mode = "notes";
         studyMaterialList.setAdapter(studyMaterialArrayAdapter);
 
+        updateStudyMaterialSnapshots();
+        modeSelectorHandler();
 
-        DocumentReference schoolClassReference = db.collection("Classes").document(schoolClassID);
-        schoolClassReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                schoolClass = new SchoolClass(
-                        (String) value.get("Section"),
-                        (String) value.get("Number"),
-                        (String) value.get("Subject")
-                );
-                studyMaterialIDs = (ArrayList<String>) value.getData().get("study_material");
-                for (String studyMaterialID : studyMaterialIDs) {
-                    db.collection("StudyMaterial").document(studyMaterialID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                            switch ((String) Objects.requireNonNull(value.getData().get("type"))) {
-                                case "note":
-                                    notes.put(value.getId(), new Note(
-                                            (String) value.getData().get("title"),
-                                            (String) value.getData().get("content"),
-                                            studyMaterialID
-                                    ));
-                                    break;
-                                case "flashcard":
-                                    flashCards.put(value.getId(), new Note(
-                                            (String) value.getData().get("title"),
-                                            (String) value.getData().get("content"),
-                                            studyMaterialID
-                                    ));
-                                    break;
-                                case "quiz":
-                                    quizzes.put(value.getId(), new Note(
-                                            (String) value.getData().get("title"),
-                                            (String) value.getData().get("content"),
-                                            studyMaterialID
-                                    ));
-                                    break;
-                            }
-                            arrayAdapterList.clear();
-                            setArrayAdapter();
 
-                        }
-                    });
-                }
-            }
-        });
-
+        /**
+         * Goes to the study material activity of the clicked studymaterial
+         */
         studyMaterialList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -150,26 +120,34 @@ public class ClassFragment extends Fragment {
                 startActivity(myIntent);
             }
         });
+        /**
+         * Deletes a study material from the class
+         */
+        studyMaterialList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Do you want to delete ".concat(arrayAdapterList.get(position).getTitle()).concat("?"))
+                        .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Delete</font>"), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteMaterialFromClass(arrayAdapterList.get(position).getdbID());
+                            }
+                        })
+                        .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>Cancel</font>"), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-        for (String modeKey : modeSelectors.keySet()) {
-            modeSelectors.get(modeKey).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mode == modeKey) {
-                        return;
-                    }
-                    mode = modeKey;
-                    for (String anotherKey: modeSelectors.keySet()) {
-                        if (modeKey == anotherKey) {
-                            modeSelectors.get(anotherKey).setImageResource(R.drawable.small_orange_rect);
-                        } else {
-                            modeSelectors.get(anotherKey).setImageResource(R.drawable.small_blue_rect);
-                        }
-                    }
-                    setArrayAdapter();
-                }
-            });
-        }
+                            }
+                        })
+                        .show();
+                return true;
+            }
+        });
+
+        /**
+         * When clicked starts a dialog which requests a title for a new studymaterial
+         */
         addStudyMaterialButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -190,7 +168,9 @@ public class ClassFragment extends Fragment {
                         .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Manually Create</font>"), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
+                                AddSingleTextDialogFragment addSingleTextDialogFragment =  new AddSingleTextDialogFragment(getActivity(), "title");
+                                addSingleTextDialogFragment.setTargetFragment(thisFragment, 964);
+                                addSingleTextDialogFragment.show(getActivity().getSupportFragmentManager(), "Showing addsingle");
                             }
                         })
                         .setNeutralButton(Html.fromHtml("<font color = '#AEB8FE'>AI Generate</font>"), new DialogInterface.OnClickListener() {
@@ -212,18 +192,47 @@ public class ClassFragment extends Fragment {
 
 
     }
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
-
-
-    }
-
+    /**
+     * Is called every time an add studymaterial dialog concludes
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode The integer result code returned by the child activity
+     *                   through its setResult().
+     * @param data An Intent, which can return result data to the caller
+     *               (various data can be attached to Intent "extras").
+     *
+     */
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 964) {
+            if (resultCode == Activity.RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                switch (mode) {
+                    case "notes":
+                        Note note = new Note((String) bundle.get("title"), null, null);
+                        note.addToDatabase(schoolClassID);
+                        break;
+                    case "flashcards":
+                        FlashCard flashcard = new FlashCard((String) bundle.get("title"), null, null);
+                        flashcard.addToDatabase(schoolClassID);
+                        break;
+                    case "quizzes":
+                        Quiz quiz = new Quiz((String) bundle.get("title"), null, null);
+                        quiz.addToDatabase(schoolClassID);
+                        break;
+                }
+            }
+        }
     }
 
+    /**
+     * Switches fragments
+     * @param fragment: fragment to be switched to
+     * @param bundle: bundle to be sent to new fragment
+     */
     public void switchFragment(Fragment fragment, Bundle bundle) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragment.setArguments(bundle);
@@ -233,6 +242,10 @@ public class ClassFragment extends Fragment {
                 .commit();
     }
 
+    /**
+     * Sets the arrayAdapterList (the list which is displayed by the arrayadapter)
+     * to whichever studymaterial is the current mode
+     */
     public void setArrayAdapter() {
         arrayAdapterList.clear();
         switch (mode) {
@@ -255,4 +268,96 @@ public class ClassFragment extends Fragment {
         studyMaterialArrayAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Deletes a studymaterial from the class
+     * @param dbID: ID of studymaterial to be deleted
+     */
+    public void deleteMaterialFromClass(String dbID) {
+            CollectionReference studyMaterialRef = db.collection("StudyMaterial");
+            studyMaterialRef.document(dbID).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Log.d("StudyMaterial", "Deleted " + dbID);
+                    updateStudyMaterialSnapshots();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("StudyMaterial", "Didn't delete " + dbID + " " + e.toString());
+                }
+            });
+
+    }
+    /**
+     * Adds a snapshotlistener which updates the studymaterials belonging to the class everytime it changes.
+     * snapshots should be reupdated everytime a studymaterial is added or removed from this class.
+     */
+    public void updateStudyMaterialSnapshots() {
+        // Clear out studyMaterialSnapshots
+        for (ListenerRegistration listener: studyMaterialSnapshots) {
+            listener.remove();
+        }
+        studyMaterialSnapshots.clear();
+        notes.clear(); quizzes.clear(); flashCards.clear();
+
+        Query classStudyMaterial = db.collection("StudyMaterial").whereEqualTo("class", schoolClassID);
+        studyMaterialSnapshots.add(classStudyMaterial.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                for (QueryDocumentSnapshot doc: value) {
+                        switch ((String) Objects.requireNonNull(doc.get("type"))) {
+                            case "note":
+                                notes.put(doc.getId(), new Note(
+                                        (String) doc.get("title"),
+                                        (String) doc.get("content"),
+                                        doc.getId()
+                                ));
+                                break;
+                            case "flashcard":
+                                flashCards.put(doc.getId(), new Note(
+                                        (String) doc.get("title"),
+                                        (String) doc.get("content"),
+                                        doc.getId()
+                                ));
+                                break;
+                            case "quiz":
+                                quizzes.put(doc.getId(), new Note(
+                                        (String) doc.get("title"),
+                                        (String) doc.get("content"),
+                                        doc.getId()
+                                ));
+                                break;
+                        }
+                    }
+                arrayAdapterList.clear();
+                setArrayAdapter();
+            }
+        }));
+    }
+
+    /**
+     * Sets the colors of the mode selectors.
+     * The selected one is orange, the rest are light blue.
+     */
+    public void modeSelectorHandler() {
+        for (String modeKey : modeSelectors.keySet()) {
+            modeSelectors.get(modeKey).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mode == modeKey) {
+                        return;
+                    }
+                    mode = modeKey;
+                    for (String anotherKey: modeSelectors.keySet()) {
+                        if (modeKey == anotherKey) {
+                            modeSelectors.get(anotherKey).setImageResource(R.drawable.small_orange_rect);
+                        } else {
+                            modeSelectors.get(anotherKey).setImageResource(R.drawable.small_blue_rect);
+                        }
+                    }
+                    setArrayAdapter();
+                }
+            });
+        }
+    }
 }

@@ -1,11 +1,24 @@
 package com.example.myapplication.Fragments.Classes.StudyMaterial;
 
 import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.example.myapplication.Fragments.Classes.SchoolClass.SchoolClass;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 public abstract class StudyMaterial {
     private String title;
@@ -58,5 +71,8 @@ public abstract class StudyMaterial {
         PyObject gptModule = py.getModule("gpt");
         return gptModule.callAttr("generateContent", stringBuilderPrompt.toString()).toJava(String.class);
     }
+
+    public abstract void addToDatabase(String classID);
+
 
 }

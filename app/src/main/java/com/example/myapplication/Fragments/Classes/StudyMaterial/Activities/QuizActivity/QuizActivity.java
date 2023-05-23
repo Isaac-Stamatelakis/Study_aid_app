@@ -1,20 +1,24 @@
-package com.example.myapplication.Fragments.Classes.StudyMaterial.Activities;
+package com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.QuizActivity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Quiz;
 import com.example.myapplication.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
-public class QuizActivity extends Activity {
+public class QuizActivity extends FragmentActivity {
     String user_id;
     FirebaseFirestore db;
     Quiz quiz;
+    Button takeQuizButton;
     @SuppressLint("HardwareIds")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +28,12 @@ public class QuizActivity extends Activity {
         quiz = new Quiz(bundle.get("title").toString(), bundle.get("content").toString(),bundle.get("dbID").toString());
         user_id = (Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID));
         db = FirebaseFirestore.getInstance();
+        PreQuizFragment preQuizFragment = new PreQuizFragment();
+        preQuizFragment.setArguments(bundle);
+        FragmentManager fragmentManager = QuizActivity.this.getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.quiz_container, preQuizFragment)
+                .commit();
 
     }
 

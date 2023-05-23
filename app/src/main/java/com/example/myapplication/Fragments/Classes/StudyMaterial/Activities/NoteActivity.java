@@ -7,7 +7,6 @@ import android.provider.Settings;
 import android.widget.EditText;
 
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Note;
-import com.example.myapplication.Fragments.Classes.StudyMaterial.Quiz;
 import com.example.myapplication.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
