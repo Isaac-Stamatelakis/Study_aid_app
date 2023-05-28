@@ -36,7 +36,6 @@ public abstract class StudyMaterial {
     }
     public String getContent() {return this.content;}
     public String getdbID() {return this.dbID;}
-    public abstract void buildContent();
     public String generateContent(Integer amount, String materialType, SchoolClass schoolClass, String unit, String school, String format, Context context) {
         StringBuilder stringBuilderPrompt = new StringBuilder()
                 .append("Generate me a ");

@@ -1,32 +1,22 @@
 package com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.QuizActivity;
 
 import android.content.Context;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.myapplication.Fragments.Classes.StudyMaterial.StudyMaterial;
 import com.example.myapplication.R;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 
-public class MultipleChoiceArrayAdapter extends ArrayAdapter<String> {
+public class TakeQuizArrayAdapter extends ArrayAdapter<String> {
     private ArrayList<String> currentAnswers;
     private ArrayList<String> answers;
 
@@ -36,7 +26,7 @@ public class MultipleChoiceArrayAdapter extends ArrayAdapter<String> {
 
     RadioButton radioButton;
 
-    public MultipleChoiceArrayAdapter(Context context, ArrayList<String> currentAnswers, ArrayList<String> answers, Integer currentQuiz) {
+    public TakeQuizArrayAdapter(Context context, ArrayList<String> currentAnswers, ArrayList<String> answers, Integer currentQuiz) {
         super(context,0,currentAnswers);
         this.currentAnswers = currentAnswers;
         this.context = context;
@@ -44,6 +34,7 @@ public class MultipleChoiceArrayAdapter extends ArrayAdapter<String> {
         this.currentQuiz=currentQuiz;
     }
     int selectedPosition = -1;
+
 
     @NonNull
     @Override
@@ -70,7 +61,15 @@ public class MultipleChoiceArrayAdapter extends ArrayAdapter<String> {
                 notifyDataSetChanged();
             }
         });
-
         return view;
+    }
+    public void changeCurrentQuiz(int amount) {
+        currentQuiz += amount;
+        selectedPosition = Integer.parseInt(answers.get(currentQuiz-1));
+        notifyDataSetChanged();
+    }
+    public void resetCurrentAnswer() {
+        selectedPosition = -1;
+        answers.set(currentQuiz-1, String.valueOf(-1));
     }
 }

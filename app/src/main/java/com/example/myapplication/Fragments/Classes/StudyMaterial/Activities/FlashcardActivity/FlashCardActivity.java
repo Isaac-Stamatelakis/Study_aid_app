@@ -1,11 +1,8 @@
-package com.example.myapplication.Fragments.Classes.StudyMaterial.Activities;
+package com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.FlashcardActivity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Instrumentation;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Html;
@@ -15,21 +12,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.example.myapplication.Fragments.Classes.ManualAddClassDialogFragment;
-import com.example.myapplication.Fragments.Classes.SchoolClass.SchoolClass;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.FlashCard;
-import com.example.myapplication.Fragments.Classes.StudyMaterial.Quiz;
 import com.example.myapplication.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 
 public class FlashCardActivity extends FragmentActivity implements AddFlashCardDialogFragment.OnInputListener {

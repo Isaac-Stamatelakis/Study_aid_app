@@ -16,12 +16,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.ui.AppBarConfiguration;
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+import com.example.myapplication.Fragments.Profile.EditProfileFragment;
+import com.example.myapplication.Fragments.Profile.ProfileFragment;
+import com.example.myapplication.Fragments.Profile.User;
 import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.nInput.AddSingleTextDialogFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -116,10 +120,12 @@ public class MainActivity extends AppCompatActivity {
                         Map<String, Object> userInfo = new HashMap<>();
                         userInfo.put("Major", Collections.emptyList());
                         userInfo.put("Minor", Collections.emptyList());
+                        userInfo.put("Name", null);
                         userInfo.put("Education_level", null);
                         userInfo.put("user_id", user_id);
-                        userInfo.put("School", null);
+                        userInfo.put("School", Collections.emptyList());
                         userInfo.put("Year", null);
+                        userInfo.put("Faculty", null);
                         CollectionReference classCollection = db.collection("Users");
                         String id = classCollection.document().getId();
                         classCollection.document(id).set(userInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -132,7 +138,11 @@ public class MainActivity extends AppCompatActivity {
                                                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
-
+                                                        User user = new User(user_id);
+                                                        FragmentManager fragmentManager = getSupportFragmentManager();
+                                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                                        fragmentTransaction.replace(R.id.container, new EditProfileFragment(user)).addToBackStack(null);
+                                                        fragmentTransaction.commit();
                                                     }
                                                 })
                                                 .show();
