@@ -45,6 +45,7 @@ public class MultipleChoiceArrayAdapter extends ArrayAdapter<String> {
     }
     int selectedPosition = -1;
 
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -70,7 +71,11 @@ public class MultipleChoiceArrayAdapter extends ArrayAdapter<String> {
                 notifyDataSetChanged();
             }
         });
-
         return view;
+    }
+    public void changeCurrentQuiz(int amount) {
+        currentQuiz += amount;
+        selectedPosition = -1;
+        notifyDataSetChanged();
     }
 }

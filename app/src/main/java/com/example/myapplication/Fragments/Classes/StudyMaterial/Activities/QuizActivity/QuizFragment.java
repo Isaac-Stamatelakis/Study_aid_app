@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -39,6 +40,8 @@ public class QuizFragment extends Fragment {
     Integer currentQuiz;
     ArrayList<HashMap<String, String>> quizMapArray;
     ArrayList<String> answers;
+    Button nextButton;
+    Button previousButton;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.multiple_choice_quiz, container, false);
@@ -53,6 +56,8 @@ public class QuizFragment extends Fragment {
         currentAnswers = new ArrayList<>();
         //Views
         questionText = view.findViewById(R.id.multiple_choice_quiz_question);
+        nextButton = view.findViewById(R.id.multiple_choice_next_button);
+        previousButton = view.findViewById(R.id.multiple_choice_previous_button);
 
         // Build Content
         try {
@@ -84,6 +89,33 @@ public class QuizFragment extends Fragment {
         setArrayAdapter();
         answerList.setAdapter(multipleChoiceArrayAdapter);
 
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentQuiz  == quizMapArray.size()) {
+
+                } else {
+                    currentQuiz ++;
+                    setArrayAdapter();
+                    multipleChoiceArrayAdapter.changeCurrentQuiz(1);
+                }
+            }
+        });
+
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentQuiz == 1) {
+
+                } else {
+                    currentQuiz --;
+                    setArrayAdapter();
+                    multipleChoiceArrayAdapter.changeCurrentQuiz(-1);
+
+                }
+            }
+        });
         return view;
 
 
@@ -95,7 +127,9 @@ public class QuizFragment extends Fragment {
     }
 
     public void setArrayAdapter() {
-
+        for (int i = 0; i < quizMapArray.size(); i ++) {
+            Log.d("TEST", "TEST" + answers.get(i));
+        }
         HashMap<String, String> hashMap = quizMapArray.get(currentQuiz-1);
         currentAnswers.clear();
         questionText.setText(hashMap.get("question"));

@@ -3,7 +3,6 @@ package com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.Qui
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.fragment.app.FragmentActivity;
@@ -28,7 +27,7 @@ public class QuizActivity extends FragmentActivity {
         quiz = new Quiz(bundle.get("title").toString(), bundle.get("content").toString(),bundle.get("dbID").toString());
         user_id = (Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID));
         db = FirebaseFirestore.getInstance();
-        PreQuizFragment preQuizFragment = new PreQuizFragment();
+        QuizSummaryFragment preQuizFragment = new QuizSummaryFragment();
         preQuizFragment.setArguments(bundle);
         FragmentManager fragmentManager = QuizActivity.this.getSupportFragmentManager();
         fragmentManager.beginTransaction()

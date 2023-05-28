@@ -13,13 +13,13 @@ import androidx.fragment.app.FragmentManager;
 import com.example.myapplication.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class PreQuizFragment extends Fragment {
+public class QuizSummaryFragment extends Fragment {
     FirebaseFirestore db;
     Button takeQuizButton;
     Button regenerateQuizButton;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.pre_quiz_fragment, container, false);
+        View view = inflater.inflate(R.layout.quiz_summary_fragment, container, false);
 
         db = FirebaseFirestore.getInstance();
 
