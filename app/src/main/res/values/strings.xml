@@ -16,13 +16,13 @@
     <string name="profile_fragment_school">School</string>
     <string name="profile_fragment_year">Year</string>
     <string name="profile_fragment_faculty">Faculty</string>
-    <string name="edit_profile_name">Name</string>
-    <string name="edit_profile_school">School(s)</string>
-    <string name="edit_profile_year">Year</string>
-    <string name="edit_profile_minor">Minor(s)</string>
-    <string name="edit_profile_major">Major(s)</string>
-    <string name="edit_profile_faculty">Faculty</string>
-    <string name="edit_profile_education_level">Education_level</string>
+    <string name="edit_profile_name">Enter Name</string>
+    <string name="edit_profile_school">Enter School(s)</string>
+    <string name="edit_profile_year">Enter Year</string>
+    <string name="edit_profile_minor">Enter Minor(s)</string>
+    <string name="edit_profile_major">Enter Major(s)</string>
+    <string name="edit_profile_faculty">Enter Faculty</string>
+    <string name="edit_profile_education_level">Enter Education_level</string>
     <string name="edit_profile_cancel">Cancel</string>
     <string name="edit_profile_save">Save</string>
 </resources>

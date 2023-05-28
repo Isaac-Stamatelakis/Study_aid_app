@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -22,6 +23,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.A;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +41,16 @@ public class EditProfileFragment extends Fragment {
     EditText majorText;
     EditText minorText;
     EditText yearText;
-
+    User user;
+    Button cancelButton;
+    Button saveButton;
+    public EditProfileFragment(User user) {
+        this.user = user;
+    }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.edit_profile_fragment, container, false);
 
         db = FirebaseFirestore.getInstance();
-        user_id = (Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID));
 
         //Views
         nameText = view.findViewById(R.id.edit_profile_name);
@@ -52,6 +60,9 @@ public class EditProfileFragment extends Fragment {
         majorText = view.findViewById(R.id.edit_profile_major);
         minorText = view.findViewById(R.id.edit_profile_minor);
         yearText = view.findViewById(R.id.edit_profile_year);
+        cancelButton = view.findViewById(R.id.edit_profile_cancel_button);
+        saveButton = view.findViewById(R.id.edit_profile_save_button);
+        setTextFromDB();
 
         //Spinner
         String[] educationTypes = new String[]{"University", "Technical School","Grade School"};
@@ -80,7 +91,25 @@ public class EditProfileFragment extends Fragment {
 
             }
         });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDBFromText();
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+
+
         return view;
+
+
 
 
     }
@@ -99,6 +128,47 @@ public class EditProfileFragment extends Fragment {
         }
     }
 
+    public void setTextFromDB() {
+        nameText.setText(user.getName());
+        yearText.setText(user.getYear());
+        schoolText.setText(formatArrayToString(user.getSchools()));
+        facultyText.setText(user.getFaculty());
+        educationLevelText.setText(user.getEducationLevel());
+        majorText.setText(formatArrayToString(user.getMajors()));
+        minorText.setText(formatArrayToString(user.getMinors()));
+    }
 
+    public void setDBFromText() {
+        user.setName(nameText.getText().toString());
+        user.setYear(yearText.getText().toString());
+        user.setSchools(formatStringToArray(schoolText.getText().toString()));
+        user.setMajors(formatStringToArray(majorText.getText().toString()));
+        user.setMinors(formatStringToArray(minorText.getText().toString()));
+        user.setEducationLevel(educationLevelText.getText().toString());
+        user.setFaculty(facultyText.getText().toString());
+        user.setDBToUser();
+    }
 
+    public String formatArrayToString(ArrayList<String> strings) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < strings.size(); i ++) {
+            stringBuilder.append(strings.get(i));
+            if (i != strings.size()-1) {
+                stringBuilder.append(", ");
+            }
+        }
+        return stringBuilder.toString();
+    }
+    public ArrayList<String> formatStringToArray(String string) {
+        // University of Alberta, University of Calgary -> [University of Alberta,University of Calgary]
+        String[] strings = string.split(",");
+        ArrayList<String> returnArray = new ArrayList<>();
+        for (String splitString: strings) {
+            if (splitString.length() > 0 && splitString.charAt(0) == ' ') {
+                splitString = splitString.substring(1);
+            }
+            returnArray.add(splitString);
+        }
+        return returnArray;
+    }
 }

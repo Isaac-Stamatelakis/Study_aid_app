@@ -16,12 +16,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.ui.AppBarConfiguration;
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+import com.example.myapplication.Fragments.Profile.EditProfileFragment;
+import com.example.myapplication.Fragments.Profile.ProfileFragment;
+import com.example.myapplication.Fragments.Profile.User;
 import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.nInput.AddSingleTextDialogFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -134,7 +138,11 @@ public class MainActivity extends AppCompatActivity {
                                                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
-
+                                                        User user = new User(user_id);
+                                                        FragmentManager fragmentManager = getSupportFragmentManager();
+                                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                                        fragmentTransaction.replace(R.id.container, new EditProfileFragment(user)).addToBackStack(null);
+                                                        fragmentTransaction.commit();
                                                     }
                                                 })
                                                 .show();

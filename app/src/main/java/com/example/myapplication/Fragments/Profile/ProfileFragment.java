@@ -39,7 +39,10 @@ public class ProfileFragment extends Fragment {
     TextView facultyText;
     TextView yearText;
     ImageView editProfileButton;
-
+    User user;
+    public ProfileFragment(User user) {
+        this.user = user;
+    }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.profile_fragment, container, false);
 
@@ -56,39 +59,25 @@ public class ProfileFragment extends Fragment {
         yearText = view.findViewById(R.id.profile_year_text); yearText.setVisibility(View.GONE);
         editProfileButton = view.findViewById(R.id.profile_edit_button);
 
-        Query user_query = db.collection("Users").whereEqualTo("user_id", user_id);
-        user_query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    List<DocumentSnapshot> documentSnapshots = task.getResult().getDocuments();
-                    for (DocumentSnapshot documentSnapshot: documentSnapshots) {
-                        // There will only ever be one user but whatever
-                        if (documentSnapshot.get("Name") == null) {
-                            nameText.setText("Username"); nameText.setVisibility(View.VISIBLE);
-                        } else {
-                            nameText.setText((String) documentSnapshot.get("Name"));
-                        }
-                        putStringIntoTextView(educationLevelText, (String) documentSnapshot.get("Education_level"), null);
-                        putStringIntoTextView(facultyText, (String) documentSnapshot.get("Faculty"), null);
-                        putStringIntoTextView(yearText, (String) documentSnapshot.get("Year"), null);
-                        putArrayIntoTextView(schoolText, (ArrayList<String>) documentSnapshot.get("School"));
-                        putArrayIntoTextView(majorText, (ArrayList<String>) documentSnapshot.get("Major"));
-                        putArrayIntoTextView(minorText, (ArrayList<String>) documentSnapshot.get("Minor"));
-
-                    }
-
-
-                }
-            }
-        });
+        // Set Text
+        if (user.getName() == null || user.getName().length() == 0) {
+            nameText.setText("Username"); nameText.setVisibility(View.VISIBLE);
+        } else {
+            nameText.setText(user.getName()); nameText.setVisibility(View.VISIBLE);
+        }
+        putStringIntoTextView(educationLevelText, user.getEducationLevel(), null);
+        putStringIntoTextView(facultyText, user.getFaculty(), null);
+        putStringIntoTextView(yearText, user.getYear(), null);
+        putArrayIntoTextView(schoolText, user.getSchools());
+        putArrayIntoTextView(majorText, user.getMajors());
+        putArrayIntoTextView(minorText, user.getMinors());
 
         editProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, new EditProfileFragment())
+                        .replace(R.id.container, new EditProfileFragment(user))
                         .addToBackStack(null)
                         .commit();
             }
@@ -104,7 +93,11 @@ public class ProfileFragment extends Fragment {
     }
 
     public void putArrayIntoTextView(TextView textView, ArrayList<String> strings) {
+
         if (strings.size() == 0) {
+            return;
+        }
+        if (strings.size() == 1 && strings.get(0).length() == 0) {
             return;
         }
         textView.setVisibility(View.VISIBLE);
@@ -125,7 +118,7 @@ public class ProfileFragment extends Fragment {
     }
 
     public void putStringIntoTextView(TextView textView, String string, String nullText) {
-        if ((String) string == null) {
+        if ((String) string == null || string.length() ==0){
             if (nullText == null) {
                 return;
             }

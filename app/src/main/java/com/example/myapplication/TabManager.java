@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import android.provider.Settings;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -8,14 +10,17 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.myapplication.Fragments.Classes.ClassSelectorFragment;
 import com.example.myapplication.Fragments.Profile.ProfileFragment;
+import com.example.myapplication.Fragments.Profile.User;
 import com.example.myapplication.Fragments.SocialFragment;
 
 public class TabManager {
     private FragmentManager fragmentManager;
     private  Fragment currentFragment;
     private String transactionTAG;
+    private User user;
     public TabManager(@NonNull FragmentActivity fragmentActivity) {
         fragmentManager = fragmentActivity.getSupportFragmentManager();
+        user = new User((Settings.Secure.getString(fragmentActivity.getContentResolver(), Settings.Secure.ANDROID_ID)));
     }
 
     public void replaceFragment(Fragment fragment, String transactionTAG){
@@ -34,7 +39,7 @@ public class TabManager {
                 transactionTAG = "Classes";
                 break;
             case 2:
-                currentFragment = new ProfileFragment();
+                currentFragment = new ProfileFragment(user);
                 transactionTAG = "Profile";
                 break;
         }
