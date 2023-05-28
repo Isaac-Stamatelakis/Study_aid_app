@@ -1,4 +1,4 @@
-package com.example.myapplication.Fragments.Classes.StudyMaterial.Activities;
+package com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.FlashcardActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;

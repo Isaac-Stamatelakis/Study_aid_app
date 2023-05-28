@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.FlashCardActivity;
+import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.FlashcardActivity.FlashCardActivity;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.NoteActivity;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.QuizActivity.QuizActivity;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.FlashCard;

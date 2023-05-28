@@ -1,9 +1,6 @@
 package com.example.myapplication.nInput;
 
 import android.content.Context;
-import android.os.Build;
-import android.renderscript.ScriptGroup;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +10,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.myapplication.Fragments.Classes.SchoolClass.SchoolClass;
-import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.AddFlashCardDialogFragment;
-import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 
 import java.util.ArrayList;

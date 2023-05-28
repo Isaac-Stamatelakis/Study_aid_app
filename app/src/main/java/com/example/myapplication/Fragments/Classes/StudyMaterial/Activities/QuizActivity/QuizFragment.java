@@ -1,15 +1,12 @@
 package com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.QuizActivity;
 
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,12 +16,8 @@ import com.example.myapplication.Fragments.Classes.StudyMaterial.Quiz;
 import com.example.myapplication.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 public class QuizFragment extends Fragment {
     FirebaseFirestore db;
@@ -34,15 +27,16 @@ public class QuizFragment extends Fragment {
     String separator_question = "&f&";
     ListView answerList;
     String separator_possible_answer = "&q&";
-    MultipleChoiceArrayAdapter multipleChoiceArrayAdapter;
     ArrayList<String> currentAnswers;
-    RadioGroup radioGroup;
     Integer currentQuiz;
     ArrayList<HashMap<String, String>> quizMapArray;
-    ArrayList<String> answers;
+    //ArrayList<String> answers;
     Button nextButton;
     Button previousButton;
-
+    TextView extraText;
+    ImageView flagQuestion;
+    ArrayList<String> answers;
+    int quizLayout;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.multiple_choice_quiz, container, false);
         //question1&q&answer1&q&answer2&q&answer3&q&answer4&a&1&f&question2&q&answer1&q&answer2&q&answer3&q&answer4&a&4&f&question3&q&answer1&q&answer2&q&answer3&q&answer4&a&3&f&question4&q&answer1&q&answer2&q&answer3&q&answer4&a&2. Make sure to use &q& and &f& as specified. After &a& include the correct answer. Do not include question numbers."
@@ -51,71 +45,17 @@ public class QuizFragment extends Fragment {
         Bundle bundle = getArguments();
         quiz = new Quiz((String) bundle.get("title"), (String) bundle.get("content"), (String) bundle.get("dbID"));
         quizMapArray = new ArrayList<>();
-        answers = new ArrayList<>();
         currentQuiz = 1;
         currentAnswers = new ArrayList<>();
         //Views
         questionText = view.findViewById(R.id.multiple_choice_quiz_question);
         nextButton = view.findViewById(R.id.multiple_choice_next_button);
         previousButton = view.findViewById(R.id.multiple_choice_previous_button);
-
-        // Build Content
-        try {
-            String[] rawQuestionInfoArray = quiz.getContent().split(separator_question);
-            for (String rawQuestionInfo: rawQuestionInfoArray) {
-                HashMap<String, String> quizMap = new HashMap<String, String>();
-                String[] quizParts = rawQuestionInfo.split(separator_possible_answer);
-                quizMap.put("question", quizParts[0]); // Question is always first
-                Integer i = 1;
-                while (i < quizParts.length) {
-                    if (quizParts[i].contains(separator_correct_answer)) {
-                        String[] separatedPart = quizParts[i].split(separator_correct_answer);
-                        quizMap.put("answer",separatedPart[1]);
-                        quizParts[i] = separatedPart[0];
-                    }
-                    quizMap.put("answer".concat(i.toString()), quizParts[i]);
-                    i ++;
-                }
-                quizMapArray.add(quizMap);
-                answers.add(null);
-            }
-
-        } catch (Exception e) {
-            Log.d("QUIZFRAGMENT", "Error" + e);
-            getActivity().finish();
-        }
+        extraText = view.findViewById(R.id.multiple_choice_extra_text);
+        flagQuestion = view.findViewById(R.id.multiple_choice_flag);
         answerList = view.findViewById(R.id.multiple_choice_answer_list);
-        multipleChoiceArrayAdapter = new MultipleChoiceArrayAdapter(getContext(), currentAnswers, answers, currentQuiz);
-        setArrayAdapter();
-        answerList.setAdapter(multipleChoiceArrayAdapter);
 
-
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentQuiz  == quizMapArray.size()) {
-
-                } else {
-                    currentQuiz ++;
-                    setArrayAdapter();
-                    multipleChoiceArrayAdapter.changeCurrentQuiz(1);
-                }
-            }
-        });
-
-        previousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentQuiz == 1) {
-
-                } else {
-                    currentQuiz --;
-                    setArrayAdapter();
-                    multipleChoiceArrayAdapter.changeCurrentQuiz(-1);
-
-                }
-            }
-        });
+        quiz.buildContent(separator_question, separator_possible_answer, separator_correct_answer, quizMapArray, getActivity());
         return view;
 
 
@@ -127,9 +67,6 @@ public class QuizFragment extends Fragment {
     }
 
     public void setArrayAdapter() {
-        for (int i = 0; i < quizMapArray.size(); i ++) {
-            Log.d("TEST", "TEST" + answers.get(i));
-        }
         HashMap<String, String> hashMap = quizMapArray.get(currentQuiz-1);
         currentAnswers.clear();
         questionText.setText(hashMap.get("question"));
@@ -138,8 +75,6 @@ public class QuizFragment extends Fragment {
             currentAnswers.add(hashMap.get("answer".concat(i.toString())));
             i ++;
         }
-        multipleChoiceArrayAdapter.notifyDataSetChanged();
-
 
     }
 }

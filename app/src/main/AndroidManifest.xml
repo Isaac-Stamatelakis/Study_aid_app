@@ -33,7 +33,7 @@
         </activity>
         <activity
             android:exported="true"
-            android:name=".Fragments.Classes.StudyMaterial.Activities.FlashCardActivity">
+            android:name=".Fragments.Classes.StudyMaterial.Activities.FlashcardActivity.FlashCardActivity">
         <intent-filter>
             <action android:name="com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.FlashCardActivity" />
             <category android:name="android.intent.category.DEFAULT" />

@@ -25,4 +25,5 @@
     <string name="edit_profile_education_level">Enter Education_level</string>
     <string name="edit_profile_cancel">Cancel</string>
     <string name="edit_profile_save">Save</string>
+    <string name="undefined">Undefined</string>
 </resources>

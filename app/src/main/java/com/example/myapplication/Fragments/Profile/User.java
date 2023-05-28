@@ -52,6 +52,7 @@ public class User {
                     majors = (ArrayList<String>) documentSnapshot.get("Major");
                     minors = (ArrayList<String>) documentSnapshot.get("Minor");
                     schools = (ArrayList<String>) documentSnapshot.get("School");
+                    year = (String) documentSnapshot.get("Year");
                     docID = documentSnapshot.getId();
                 }
             }
