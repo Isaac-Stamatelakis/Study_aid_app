@@ -8,6 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import org.w3c.dom.Document;
+
 import java.util.ArrayList;
 
 public class TakeQuizFragment extends QuizFragment {
@@ -140,6 +149,7 @@ public class TakeQuizFragment extends QuizFragment {
     }
 
     public void returnAnswerResults() {
+        quiz.addAttemptToDatabase(quiz.formatAttempt(answers));
         getActivity().getSupportFragmentManager().popBackStack();
     }
     public ArrayList<String> getAnswers() {

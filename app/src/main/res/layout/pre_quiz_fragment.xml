@@ -34,17 +34,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/prompt_quiz_button_review" />
+        app:layout_constraintTop_toBottomOf="@id/prompt_quiz_button_take" />
 
-    <Button
-        android:text="Review Quiz"
-        android:id="@+id/prompt_quiz_button_review"
+    <ListView
+        android:id="@+id/prompt_quiz_listview"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:layout_height="300dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/prompt_quiz_button_take" />
+        app:layout_constraintTop_toBottomOf="@+id/prompt_quiz_button_generate" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

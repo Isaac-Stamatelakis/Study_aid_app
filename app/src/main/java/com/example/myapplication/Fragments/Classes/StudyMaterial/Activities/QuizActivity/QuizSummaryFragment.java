@@ -8,14 +8,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.myapplication.Fragments.Classes.StudyMaterial.Quiz;
 import com.example.myapplication.R;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
 
@@ -26,16 +34,28 @@ public class QuizSummaryFragment extends Fragment {
     TakeQuizFragment takeQuizFragment;
     Button reviewQuizButton;
     ArrayList<String> userAnswers;
+    ListView attemptList;
+    Quiz quiz;
+    ArrayList<String> attempts;
+    QuizAttemptArrayAdapter quizAttemptArrayAdapter;
+    String separator_correct_answer = "&a&";
+    String separator_question = "&f&";
+    String separator_possible_answer = "&q&";
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.pre_quiz_fragment, container, false);
+        Bundle bundle = getArguments();
+        quiz = new Quiz((String) bundle.get("title"), (String) bundle.get("content"), (String) bundle.get("dbID"));
 
         db = FirebaseFirestore.getInstance();
         userAnswers = new ArrayList<>();
+
+
         //Views
         takeQuizButton = view.findViewById(R.id.prompt_quiz_button_take);
         regenerateQuizButton = view.findViewById(R.id.prompt_quiz_button_generate);
-        reviewQuizButton = view.findViewById(R.id.prompt_quiz_button_review);
+        attemptList = view.findViewById(R.id.prompt_quiz_listview);
+        attemptList.setAdapter(quizAttemptArrayAdapter);
         //Listeners
         takeQuizButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,33 +84,36 @@ public class QuizSummaryFragment extends Fragment {
                         .show();
             }
         });
-        reviewQuizButton.setOnClickListener(new View.OnClickListener() {
+        attemptList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                if (takeQuizFragment == null) {
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle("You cannot review a quiz you haven't taken")
-                            .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Continue</font>"), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            })
-                            .show();
-                } else {
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    ReviewQuizFragment reviewQuizFragment = new ReviewQuizFragment(takeQuizFragment.getAnswers(), takeQuizFragment.getCorrectAnswers());
-                    reviewQuizFragment.setArguments(getArguments());
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.quiz_container, reviewQuizFragment, "TAKE_QUIZ")
-                            .addToBackStack(null)
-                            .commit();
-                }
-
-                // Goes to generate quiz content fragment
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                ReviewQuizFragment reviewQuizFragment = new ReviewQuizFragment(
+                        attempts.get(position),
+                        quiz.getCorrectAnswers(separator_question, separator_possible_answer, separator_correct_answer)
+                );
+                reviewQuizFragment.setArguments(getArguments());
+                fragmentManager.beginTransaction()
+                        .replace(R.id.quiz_container, reviewQuizFragment, "TAKE_QUIZ")
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 
+        DocumentReference documentReference = db.collection("StudyMaterial").document(quiz.getdbID());
+        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                attempts = (ArrayList<String>) value.get("attempts");
+                quizAttemptArrayAdapter = new QuizAttemptArrayAdapter(
+                        getActivity(), attempts,
+                        quiz.getCorrectAnswers(separator_question, separator_possible_answer, separator_correct_answer),
+                        quiz.getTotalQuestions(separator_question)
+                );
+                attemptList.setAdapter(quizAttemptArrayAdapter);
+                quizAttemptArrayAdapter.notifyDataSetChanged();
+            }
+        });
         return view;
 
 
@@ -98,6 +121,10 @@ public class QuizSummaryFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+    }
+
+    public void updateListView() {
 
     }
 }

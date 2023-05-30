@@ -16,8 +16,12 @@ import java.util.ArrayList;
 public class ReviewQuizFragment extends QuizFragment {
     ReviewQuizArrayAdapter reviewQuizArrayAdapter;
     ArrayList<String> correctAnswers;
-    public ReviewQuizFragment(ArrayList<String> answers, ArrayList<String> correctAnswers) {
-        this.answers = answers;
+    public ReviewQuizFragment(String attempt, ArrayList<String> correctAnswers) {
+        this.answers = new ArrayList<>();
+        String[] tempAnswers = attempt.split("&");
+        for (int i = 0; i < tempAnswers.length; i ++) {
+            this.answers.add(tempAnswers[i]);
+        }
         this.correctAnswers = correctAnswers;
     }
     @Override
