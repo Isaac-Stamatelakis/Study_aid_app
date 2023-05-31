@@ -155,6 +155,9 @@ public class Quiz extends StudyMaterial {
     }
 
     public int getTotalQuestions (String separator_question) {
+        if (this.getContent() == null) {
+            return -1;
+        }
         return this.getContent().split(separator_question).length;
     }
 

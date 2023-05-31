@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import androidx.annotation.Nullable;
 
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Quiz;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -138,22 +141,51 @@ public class TakeQuizFragment extends QuizFragment {
         flagQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Do you want to remove this question?")
-                        .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Yes</font>"), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                quizMapArray.remove(currentQuiz-1);
-                                quiz.updateDBContent(quiz.formatContent(separator_question, separator_possible_answer, separator_correct_answer, quizMapArray), currentQuiz-1);
-                            }
-                        })
-                        .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>No</font>"), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                if (quizMapArray.size() == 1) {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Do you want to delete this quiz?")
+                            .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Yes</font>"), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    db.collection("StudyMaterial").document(quiz.getdbID()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Log.d("TakeQuizFragment", "Deleted quiz: " + quiz.getdbID());
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("TakeQuizFragment", "Could not delete quiz. Error: " + e);
+                                        }
+                                    });
+                                    getActivity().finish();
+                                }
+                            })
+                            .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>No</font>"), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
 
-                            }
-                        })
-                        .show();
+                                }
+                            })
+                            .show();
+                } else {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Do you want to remove this question?")
+                            .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Yes</font>"), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    quizMapArray.remove(currentQuiz-1);
+                                    quiz.updateDBContent(quiz.formatContent(separator_question, separator_possible_answer, separator_correct_answer, quizMapArray), currentQuiz-1);
+                                }
+                            })
+                            .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>No</font>"), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .show();
+                }
             }
         });
         return view;

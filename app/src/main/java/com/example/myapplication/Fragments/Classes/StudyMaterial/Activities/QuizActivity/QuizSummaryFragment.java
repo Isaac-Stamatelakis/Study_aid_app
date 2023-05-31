@@ -106,13 +106,15 @@ public class QuizSummaryFragment extends Fragment {
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 quiz = new Quiz((String) value.get("title"), (String) value.get("content"), quiz.getdbID());
                 attempts = (ArrayList<String>) value.get("attempts");
-                quizAttemptArrayAdapter = new QuizAttemptArrayAdapter(
-                        getActivity(), attempts,
-                        quiz.getCorrectAnswers(separator_question, separator_possible_answer, separator_correct_answer),
-                        quiz.getTotalQuestions(separator_question)
-                );
-                attemptList.setAdapter(quizAttemptArrayAdapter);
-                quizAttemptArrayAdapter.notifyDataSetChanged();
+                if (attempts != null) {
+                    quizAttemptArrayAdapter = new QuizAttemptArrayAdapter(
+                            getActivity(), attempts,
+                            quiz.getCorrectAnswers(separator_question, separator_possible_answer, separator_correct_answer),
+                            quiz.getTotalQuestions(separator_question)
+                    );
+                    attemptList.setAdapter(quizAttemptArrayAdapter);
+                    quizAttemptArrayAdapter.notifyDataSetChanged();
+                }
             }
         });
 
