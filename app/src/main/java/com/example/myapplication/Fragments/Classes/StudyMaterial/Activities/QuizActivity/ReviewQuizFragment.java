@@ -90,7 +90,7 @@ public class ReviewQuizFragment extends QuizFragment {
             public void onClick(View v) {
                 if (currentQuiz  == quizMapArray.size()) {
                     new AlertDialog.Builder(getContext())
-                            .setTitle("Are you sure you want to submit?")
+                            .setTitle("Are you sure you want to finish this review?")
                             .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Yes</font>"), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -111,12 +111,7 @@ public class ReviewQuizFragment extends QuizFragment {
                 }
             }
         });
-        flagQuestion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
         return view;
 
 

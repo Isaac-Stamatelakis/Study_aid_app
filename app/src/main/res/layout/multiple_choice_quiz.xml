@@ -8,12 +8,13 @@
 
     <TextView
         android:id="@+id/multiple_choice_quiz_question"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:textColor="@color/black"
+        android:layout_marginHorizontal="30dp"
         android:text="Undefined Question"
+        android:gravity="left"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,10 +43,10 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:src="@drawable/edit_icon"
-        app:layout_constraintBottom_toBottomOf="@+id/multiple_choice_clear_choice"
+        app:layout_constraintBottom_toBottomOf="@+id/multiple_choice_extra_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/multiple_choice_clear_choice"
-        app:layout_constraintTop_toTopOf="@+id/multiple_choice_clear_choice" />
+        app:layout_constraintStart_toEndOf="@+id/multiple_choice_extra_text"
+        app:layout_constraintTop_toTopOf="@+id/multiple_choice_extra_text" />
 
     <LinearLayout
         android:id="@+id/linearLayout"

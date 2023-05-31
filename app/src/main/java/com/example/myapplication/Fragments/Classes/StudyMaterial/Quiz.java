@@ -14,6 +14,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.checkerframework.checker.units.qual.A;
+import org.w3c.dom.Document;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,17 +40,20 @@ public class Quiz extends StudyMaterial {
         try {
             String[] rawQuestionInfoArray = this.getContent().split(separator_question);
             for (String rawQuestionInfo: rawQuestionInfoArray) {
+                // As GPT seems to love generating the quizzes with the question number in front,
+                // the best solution to me is to encourage it and offset the quizparts by 1.
                 HashMap<String, String> quizMap = new HashMap<String, String>();
                 String[] quizParts = rawQuestionInfo.split(separator_possible_answer);
-                quizMap.put("question", quizParts[0]); // Question is always first
-                Integer i = 1;
+                quizMap.put("question", quizParts[1]); // Question is always first
+                int i = 2;
                 while (i < quizParts.length) {
+                    Log.d("TEST", quizParts[i]);
                     if (quizParts[i].contains(separator_correct_answer)) {
                         String[] separatedPart = quizParts[i].split(separator_correct_answer);
                         quizMap.put("answer",separatedPart[1]);
                         quizParts[i] = separatedPart[0];
                     }
-                    quizMap.put("answer".concat(i.toString()), quizParts[i]);
+                    quizMap.put("answer".concat(String.valueOf((i-1))), quizParts[i]);
                     i ++;
                 }
                 quizMapArray.add(quizMap);
@@ -161,6 +167,92 @@ public class Quiz extends StudyMaterial {
             }
         }
         return stringBuilder.toString();
+    }
+
+    public String formatContent
+
+            (
+            String separator_question,
+            String separator_possible_answer,
+            String separator_correct_answer,
+            ArrayList<HashMap<String, String>> quizMapArray
+            ) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < quizMapArray.size(); i ++) {
+            stringBuilder.append(i+1);
+            stringBuilder.append(separator_possible_answer);
+            stringBuilder.append(quizMapArray.get(i).get("question"));
+            stringBuilder.append(separator_possible_answer);
+            int n = 1;
+            while (true) {
+                if (quizMapArray.get(i).containsKey("answer" + n)) {
+                    stringBuilder.append(quizMapArray.get(i).get("answer" + n));
+                    if (quizMapArray.get(i).containsKey("answer" + (n+1))) {
+                        stringBuilder.append(separator_possible_answer);
+                    }
+                    n ++;
+                } else {
+                    break;
+                }
+            }
+            stringBuilder.append(separator_correct_answer);
+            stringBuilder.append(quizMapArray.get(i).get("answer"));
+            stringBuilder.append(separator_question);
+        }
+        return stringBuilder.toString();
+    }
+
+    public void updateDBContent(String newFormattedContent, int removedQuestion) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = db.collection("StudyMaterial").document(this.getdbID());
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    ArrayList<String> attempts = (ArrayList<String>) documentSnapshot.get("attempts");
+                    ArrayList<String> newAttempts = new ArrayList<>();
+                    for (int i = 0; i < attempts.size(); i ++) {
+                        Log.d("TEST", String.valueOf(removedQuestion));
+                        String[] splitAttempt = attempts.get(i).split("&");
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (int n = 0; n < splitAttempt.length; n ++) {
+                            if (n == removedQuestion) {
+                                n ++;
+                            } else {
+                                stringBuilder.append(splitAttempt[n]);
+                                if (n != splitAttempt.length-1 && n+1 != removedQuestion) {
+                                    stringBuilder.append("&");
+                                }
+                            }
+                        }
+                        newAttempts.add(stringBuilder.toString());
+                    }
+                    documentReference.update("attempts", newAttempts).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.d(TAG, "attempts updated to new content");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "attempts not updated to new content. Error: " + e);
+                        }
+                    });
+                    documentReference.update("content", newFormattedContent).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.d(TAG, "content updated to new content");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "content not updated to new content. Error: " + e);
+                        }
+                    });
+                }
+            }
+        });
     }
 
 

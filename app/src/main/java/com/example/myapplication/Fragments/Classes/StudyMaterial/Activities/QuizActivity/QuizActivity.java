@@ -44,7 +44,7 @@ public class QuizActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        ArrayList<String> tags = new ArrayList<>(); tags.add("SUMMARY"); tags.add("TAKE_QUIZ");
+        ArrayList<String> tags = new ArrayList<>(); tags.add("SUMMARY"); tags.add("TAKE_QUIZ"); tags.add("REVIEW_QUIZ");
         FragmentManager fragmentManager = QuizActivity.this.getSupportFragmentManager();
         for (String tag : tags) {
             final Fragment fragment = fragmentManager.findFragmentByTag(tag);
@@ -67,14 +67,14 @@ public class QuizActivity extends FragmentActivity {
 
     public void takeQuizBack() {
         new AlertDialog.Builder(QuizActivity.this)
-                .setTitle("Are you sure you want to exit this quiz?")
-                .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Yes</font>"), new DialogInterface.OnClickListener() {
+                .setTitle("Exiting will not save an attempt for this quiz.")
+                .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Continue</font>"), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         QuizActivity.super.onBackPressed();
                     }
                 })
-                .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>No</font>"), new DialogInterface.OnClickListener() {
+                .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>Cancel</font>"), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 

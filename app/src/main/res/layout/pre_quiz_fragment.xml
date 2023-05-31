@@ -8,9 +8,12 @@
         android:id="@+id/prompt_quiz_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="20dp"
         android:gravity="left"
         android:text="Take the quiz by pressing the button. As these quizzes are generated using AI, they may be incorrect at times. In order to improve their accuracy, you can provide notes you want the AI to read. You can also suggest key words and tell it to focus on certain subjects."
         android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

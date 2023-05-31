@@ -94,7 +94,7 @@ public class QuizSummaryFragment extends Fragment {
                 );
                 reviewQuizFragment.setArguments(getArguments());
                 fragmentManager.beginTransaction()
-                        .replace(R.id.quiz_container, reviewQuizFragment, "TAKE_QUIZ")
+                        .replace(R.id.quiz_container, reviewQuizFragment, "REVIEW_QUIZ")
                         .addToBackStack(null)
                         .commit();
             }
@@ -104,6 +104,7 @@ public class QuizSummaryFragment extends Fragment {
         documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                quiz = new Quiz((String) value.get("title"), (String) value.get("content"), quiz.getdbID());
                 attempts = (ArrayList<String>) value.get("attempts");
                 quizAttemptArrayAdapter = new QuizAttemptArrayAdapter(
                         getActivity(), attempts,
@@ -112,6 +113,27 @@ public class QuizSummaryFragment extends Fragment {
                 );
                 attemptList.setAdapter(quizAttemptArrayAdapter);
                 quizAttemptArrayAdapter.notifyDataSetChanged();
+            }
+        });
+
+        regenerateQuizButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("WARNING: Regenerating this quiz will erase previous attempts!")
+                        .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Continue</font>"), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>Cancel</font>"), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .show();
             }
         });
         return view;
