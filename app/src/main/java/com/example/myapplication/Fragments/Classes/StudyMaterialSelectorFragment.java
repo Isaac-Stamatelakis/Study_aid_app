@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 
-public class ClassFragment extends Fragment{
+public class StudyMaterialSelectorFragment extends Fragment{
     ListView studyMaterialList;
     String user_id;
     String mode;
@@ -88,7 +88,6 @@ public class ClassFragment extends Fragment{
         studyMaterialArrayAdapter = new StudyMaterialArrayAdapter(this.getActivity(), arrayAdapterList);
         mode = "notes";
         studyMaterialList.setAdapter(studyMaterialArrayAdapter);
-
         updateStudyMaterialSnapshots();
         modeSelectorHandler();
 
@@ -293,46 +292,41 @@ public class ClassFragment extends Fragment{
      * snapshots should be reupdated everytime a studymaterial is added or removed from this class.
      */
     public void updateStudyMaterialSnapshots() {
-        // Clear out studyMaterialSnapshots
-        for (ListenerRegistration listener: studyMaterialSnapshots) {
-            listener.remove();
-        }
-        studyMaterialSnapshots.clear();
-        notes.clear(); quizzes.clear(); flashCards.clear();
-
-        Query classStudyMaterial = db.collection("StudyMaterial").whereEqualTo("class", schoolClassID);
-        studyMaterialSnapshots.add(classStudyMaterial.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        notes.clear();
+        flashCards.clear();
+        quizzes.clear();
+        Query query = db.collection("StudyMaterial").whereEqualTo("class", schoolClassID);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                for (QueryDocumentSnapshot doc: value) {
-                        switch ((String) Objects.requireNonNull(doc.get("type"))) {
-                            case "note":
-                                notes.put(doc.getId(), new Note(
-                                        (String) doc.get("title"),
-                                        (String) doc.get("content"),
-                                        doc.getId()
-                                ));
-                                break;
-                            case "flashcard":
-                                flashCards.put(doc.getId(), new Note(
-                                        (String) doc.get("title"),
-                                        (String) doc.get("content"),
-                                        doc.getId()
-                                ));
-                                break;
-                            case "quiz":
-                                quizzes.put(doc.getId(), new Note(
-                                        (String) doc.get("title"),
-                                        (String) doc.get("content"),
-                                        doc.getId()
-                                ));
-                                break;
-                        }
+                for (QueryDocumentSnapshot doc : value) {
+                    switch ((String) Objects.requireNonNull(doc.get("type"))) {
+                        case "note":
+                            notes.put(doc.getId(), new Note(
+                                    (String) doc.get("title"),
+                                    (String) doc.get("content"),
+                                    doc.getId()
+                            ));
+                            break;
+                        case "flashcard":
+                            flashCards.put(doc.getId(), new Note(
+                                    (String) doc.get("title"),
+                                    (String) doc.get("content"),
+                                    doc.getId()
+                            ));
+                            break;
+                        case "quiz":
+                            quizzes.put(doc.getId(), new Note(
+                                    (String) doc.get("title"),
+                                    (String) doc.get("content"),
+                                    doc.getId()
+                            ));
+                            break;
                     }
-                arrayAdapterList.clear();
+                }
                 setArrayAdapter();
             }
-        }));
+        });
     }
 
     /**

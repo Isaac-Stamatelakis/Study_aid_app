@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.myapplication.Fragments.Classes.ClassSelectorFragment;
 import com.example.myapplication.Fragments.Profile.ProfileFragment;
 import com.example.myapplication.Fragments.Profile.User;
+import com.example.myapplication.Fragments.Social.SocialSelectorFragment;
 import com.example.myapplication.Fragments.SocialFragment;
 
 public class TabManager {
@@ -31,7 +32,7 @@ public class TabManager {
     public void switchFragment(int position) {
         switch (position) {
             case 0:
-                currentFragment = new SocialFragment();
+                currentFragment = new SocialSelectorFragment();
                 transactionTAG = "Social";
                 break;
             case 1:

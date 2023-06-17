@@ -84,7 +84,7 @@ public class ClassSelectorFragment extends Fragment {
                                 Bundle bundle = new Bundle();
                                 bundle.putString("ID", documentSnapshot.getId());
                                 Log.d("ClassSelector", documentSnapshot.getId());
-                                ClassFragment classFragment = new ClassFragment();
+                                StudyMaterialSelectorFragment classFragment = new StudyMaterialSelectorFragment();
                                 classFragment.setArguments(bundle);
                                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                                 fragmentManager.beginTransaction()
