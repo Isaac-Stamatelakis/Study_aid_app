@@ -24,6 +24,9 @@ android {
             pip {
                 install "openai"
             }
+            pyc {
+                src false
+            }
         }
     }
 

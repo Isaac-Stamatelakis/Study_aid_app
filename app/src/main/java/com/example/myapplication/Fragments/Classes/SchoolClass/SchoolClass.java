@@ -19,6 +19,16 @@ public class SchoolClass {
     private String section;
     private String subject;
 
+    public String getDbID() {
+        return dbID;
+    }
+
+    public void setDbID(String dbID) {
+        this.dbID = dbID;
+    }
+
+    private String dbID;
+
     public SchoolClass(String number, String section, String subject) {
         this.number = number;
         this.section = section;

@@ -1,18 +1,11 @@
 package com.example.myapplication.Fragments.Social.Message;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class StudyMaterialMessage extends Message {
 
-    private String studymaterialID;
-    public StudyMaterialMessage(String owner, Date date, String studymaterialID) {
-        super(owner, date);
-        this.studymaterialID = studymaterialID;
+    public StudyMaterialMessage(String owner, LocalDateTime date, String studymaterialID) {
+        super(owner, date, studymaterialID);
     }
-    public String getStudymaterialID() {
-        return studymaterialID;
-    }
-
-
-
 }

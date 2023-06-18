@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,27 +20,18 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.myapplication.Fragments.Classes.AddClassFragment;
-import com.example.myapplication.Fragments.Classes.SchoolClass.SchoolClass;
-import com.example.myapplication.Fragments.Classes.StudyMaterial.FlashCard;
-import com.example.myapplication.Fragments.Classes.StudyMaterial.Note;
-import com.example.myapplication.Fragments.Classes.StudyMaterial.Quiz;
-import com.example.myapplication.Fragments.Classes.StudyMaterial.StudyMaterialArrayAdapter;
 import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroup;
 import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupArrayAdapter;
+import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment.ChatGroupFragment;
+import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment.ClassChatGroupFragment;
+import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment.NonClassChatGroupFragment;
 import com.example.myapplication.Fragments.Social.ChatGroup.ClassChatGroup;
 import com.example.myapplication.Fragments.Social.ChatGroup.FriendChatGroup;
 import com.example.myapplication.Fragments.Social.ChatGroup.StudyChatGroup;
 import com.example.myapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.AggregateQuery;
-import com.google.firebase.firestore.AggregateQuerySnapshot;
-import com.google.firebase.firestore.AggregateSource;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -52,7 +42,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 
 public class SocialSelectorFragment extends Fragment{
@@ -106,10 +95,15 @@ public class SocialSelectorFragment extends Fragment{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (mode) {
                     case "classes":
+                        ClassChatGroupFragment classChatGroupFragment = new ClassChatGroupFragment((ClassChatGroup) arrayAdapterList.get(position));
+                        switchFragment(classChatGroupFragment, null);
                         break;
                     case "studyGroups":
+                        NonClassChatGroupFragment nonClassChatGroupFragment = new NonClassChatGroupFragment(arrayAdapterList.get(position));
+                        switchFragment(nonClassChatGroupFragment, null);
                         break;
                     case "friends":
+
                         break;
                 }
             }
@@ -248,10 +242,16 @@ public class SocialSelectorFragment extends Fragment{
                     for (QueryDocumentSnapshot doc : value) {
                         switch ((String) doc.get("type")) {
                             case "class":
-                                classes.put(doc.getId(), new ClassChatGroup((String) doc.get("name"), (ArrayList<String>) doc.get("members")));
+                                ClassChatGroup classChatGroup = new ClassChatGroup((String) doc.get("name"), (ArrayList<String>) doc.get("members"), new ArrayList<>(), doc.getId());
+                                classChatGroup.getFromDatabase();
+                                classes.put(doc.getId(), classChatGroup);
+
                                 break;
                             case "studygroup":
-                                studyGroups.put(doc.getId(), new StudyChatGroup((String) doc.get("name"), (ArrayList<String>) doc.get("members")));
+                                StudyChatGroup studyChatGroup = new StudyChatGroup((String) doc.get("name"), (ArrayList<String>) doc.get("members"), new ArrayList<>(),doc.getId());
+                                studyChatGroup.getFromDatabase();
+                                studyGroups.put(doc.getId(), studyChatGroup);
+
                                 break;
                             case "friends":
                                 ArrayList<String> ids = (ArrayList<String>) doc.get("members");
@@ -267,7 +267,7 @@ public class SocialSelectorFragment extends Fragment{
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         if (task.isSuccessful()) {
                                             for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
-                                                friends.put(doc.getId(), new FriendChatGroup((String) queryDocumentSnapshot.get("name"), (ArrayList<String>) doc.get("members")));
+                                                friends.put(doc.getId(), new FriendChatGroup((String) queryDocumentSnapshot.get("name"), (ArrayList<String>) doc.get("members"), new ArrayList<>(), doc.getId()));
                                                 break;
                                             }
                                         }

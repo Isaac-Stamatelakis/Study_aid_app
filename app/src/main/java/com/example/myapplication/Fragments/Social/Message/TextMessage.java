@@ -2,16 +2,12 @@ package com.example.myapplication.Fragments.Social.Message;
 
 import com.example.myapplication.Fragments.Social.Message.Message;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class TextMessage extends Message {
-    public String message;
-    public TextMessage(String owner, Date date, String message) {
-        super(owner, date);
-        this.message = message;
+    public TextMessage(String owner, LocalDateTime date, String content) {
+        super(owner, date, content);
     }
 
-    public String getMessage() {
-        return this.message;
-    }
 }

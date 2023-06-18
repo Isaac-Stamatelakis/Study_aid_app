@@ -8,11 +8,10 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.myapplication.Fragments.Classes.ClassSelectorFragment;
+import com.example.myapplication.Fragments.Classes.ClassSelectorFragment.ClassSelectorFragment;
 import com.example.myapplication.Fragments.Profile.ProfileFragment;
 import com.example.myapplication.Fragments.Profile.User;
 import com.example.myapplication.Fragments.Social.SocialSelectorFragment;
-import com.example.myapplication.Fragments.SocialFragment;
 
 public class TabManager {
     private FragmentManager fragmentManager;
