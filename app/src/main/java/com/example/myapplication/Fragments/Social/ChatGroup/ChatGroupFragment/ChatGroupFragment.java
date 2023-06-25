@@ -1,22 +1,13 @@
 package com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -26,28 +17,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.example.myapplication.Fragments.Classes.ManualAddClassDialogFragment;
-import com.example.myapplication.Fragments.Classes.SchoolClass.SchoolClass;
-import com.example.myapplication.Fragments.Classes.SchoolClass.SchoolClassArrayAdapter;
-import com.example.myapplication.Fragments.Classes.StudyMaterial.Selector.ChatStudyMaterialSelectorFragment;
 import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroup;
-import com.example.myapplication.Fragments.Social.Message.Message;
 import com.example.myapplication.Fragments.Social.Message.MessageArrayAdapter;
 import com.example.myapplication.Fragments.Social.Message.TextMessage;
 import com.example.myapplication.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.AggregateQuery;
-import com.google.firebase.firestore.AggregateQuerySnapshot;
-import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.type.DateTime;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public abstract class ChatGroupFragment extends Fragment {
     FirebaseFirestore db;
@@ -73,7 +49,7 @@ public abstract class ChatGroupFragment extends Fragment {
         messageText = view.findViewById(R.id.chatgroup_send_message);
         messageListView = view.findViewById(R.id.chatgroup_messages);
         shareStudyMaterialButton = view.findViewById(R.id.chatgroup_share_studymaterial);
-        messageArrayAdapter = new MessageArrayAdapter(getContext(), chatGroup.getMessages(), chatGroup.getMemberNames());
+        messageArrayAdapter = new MessageArrayAdapter(getContext(), chatGroup.getMessages(), chatGroup.getMemberNames(), getActivity().getSupportFragmentManager());
         messageListView.setAdapter(messageArrayAdapter);
         messageArrayAdapter.notifyDataSetChanged();
 
@@ -81,6 +57,7 @@ public abstract class ChatGroupFragment extends Fragment {
 
 
     }
+
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -114,6 +91,10 @@ public abstract class ChatGroupFragment extends Fragment {
         TextMessage textMessage = new TextMessage(user_id, LocalDateTime.now(), messageText);
         chatGroup.addMessage(textMessage);
         chatGroup.addMessageToDB(textMessage, user_id, "text");
+        messageArrayAdapter.notifyDataSetChanged();
+    }
+
+    public void updateAdapter() {
         messageArrayAdapter.notifyDataSetChanged();
     }
 

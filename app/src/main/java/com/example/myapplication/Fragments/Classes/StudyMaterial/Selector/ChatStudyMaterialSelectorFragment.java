@@ -48,7 +48,7 @@ public class ChatStudyMaterialSelectorFragment extends StudyMaterialSelectorFrag
     private void listViewClickHandler(int position) {
         StudyMaterialMessage studyMaterialMessage = new StudyMaterialMessage(user_id, LocalDateTime.now(), arrayAdapterList.get(position).getdbID());
         chatGroup.addMessage(studyMaterialMessage);
-        chatGroup.addMessageToDB(studyMaterialMessage, user_id, "text");
+        chatGroup.addMessageToDB(studyMaterialMessage, user_id, "studymaterial");
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         if (chatGroup instanceof ClassChatGroup) {
             fragmentManager.popBackStack();

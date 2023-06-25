@@ -31,4 +31,6 @@
     <string name="message_content_undefined_user">UNDEFINED USER</string>
     <string name="message_content_undefined_date">UNDEFINED DATE</string>
     <string name="message_content_user_profile_picture">user profile picture</string>
+    <string name="undefined_name">UNDEFINED NAME</string>
+    <string name="undefined_type">UNDEFINED TYPE</string>
 </resources>

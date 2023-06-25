@@ -5,7 +5,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment.ChatGroupFragment;
 import com.example.myapplication.Fragments.Social.Message.Message;
+import com.example.myapplication.Fragments.Social.Message.StudyMaterialMessage;
 import com.example.myapplication.Fragments.Social.Message.TextMessage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -20,6 +22,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -132,7 +135,7 @@ public class ChatGroup {
         });
     }
 
-    public void getFromDatabase() {
+    public void getFromDatabase(ChatGroupFragment chatGroupFragment) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         setMemberNames();
         db.collection("Chats").document(dbID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -144,9 +147,28 @@ public class ChatGroup {
                     memberIDS = (ArrayList<String>) documentSnapshot.get("members");
                     messageIDS = (ArrayList<String>) documentSnapshot.get("messages");
                     for (String messageID : messageIDS) {
-                        Message message = new Message(null, null, null);
-                        message.setMessageToDB(messageID);
-                        messages.add(message);
+                        db.collection("Messages").document(messageID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot documentSnapshot = task.getResult();
+                                    String owner = (String) documentSnapshot.get("owner");
+                                    LocalDateTime date = LocalDateTime.parse((String) documentSnapshot.get("date"));
+                                    String content = (String) documentSnapshot.get("content");
+                                    switch ((String) documentSnapshot.get("type")) {
+                                        case "text":
+                                            messages.add(new TextMessage(owner, date, content));
+                                            break;
+                                        case "studymaterial":
+                                            messages.add(new StudyMaterialMessage(owner, date, content));
+                                            break;
+                                    }
+                                    chatGroupFragment.updateAdapter();
+                                } else {
+                                    Log.e(TAG, "getFromDatabase could not get message reference");
+                                }
+                            }
+                        });
                     }
                 } else {
                     Log.e(TAG, "getFromDatabase could not get chatgroup reference");
@@ -154,6 +176,7 @@ public class ChatGroup {
             }
         });
     }
+
 
     public void setMemberNames() {
         for (String memberID : memberIDS) {

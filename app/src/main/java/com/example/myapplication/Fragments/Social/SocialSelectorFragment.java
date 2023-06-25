@@ -95,11 +95,15 @@ public class SocialSelectorFragment extends Fragment{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (mode) {
                     case "classes":
+                        ClassChatGroup classChatGroup = (ClassChatGroup) arrayAdapterList.get(position);
                         ClassChatGroupFragment classChatGroupFragment = new ClassChatGroupFragment((ClassChatGroup) arrayAdapterList.get(position));
+                        classChatGroup.getFromDatabase(classChatGroupFragment);
                         switchFragment(classChatGroupFragment, null);
                         break;
                     case "studyGroups":
+                        StudyChatGroup studyChatGroup = (StudyChatGroup) arrayAdapterList.get(position);
                         NonClassChatGroupFragment nonClassChatGroupFragment = new NonClassChatGroupFragment(arrayAdapterList.get(position));
+                        studyChatGroup.getFromDatabase(nonClassChatGroupFragment);
                         switchFragment(nonClassChatGroupFragment, null);
                         break;
                     case "friends":
@@ -243,13 +247,11 @@ public class SocialSelectorFragment extends Fragment{
                         switch ((String) doc.get("type")) {
                             case "class":
                                 ClassChatGroup classChatGroup = new ClassChatGroup((String) doc.get("name"), (ArrayList<String>) doc.get("members"), new ArrayList<>(), doc.getId());
-                                classChatGroup.getFromDatabase();
                                 classes.put(doc.getId(), classChatGroup);
 
                                 break;
                             case "studygroup":
                                 StudyChatGroup studyChatGroup = new StudyChatGroup((String) doc.get("name"), (ArrayList<String>) doc.get("members"), new ArrayList<>(),doc.getId());
-                                studyChatGroup.getFromDatabase();
                                 studyGroups.put(doc.getId(), studyChatGroup);
 
                                 break;

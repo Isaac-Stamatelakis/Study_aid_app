@@ -44,7 +44,6 @@ public class Message {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
-
                     owner = (String) documentSnapshot.get("owner");
                     date = LocalDateTime.parse((String) documentSnapshot.get("date"));
                     content = (String) documentSnapshot.get("content");
