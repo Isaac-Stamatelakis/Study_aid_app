@@ -33,4 +33,5 @@
     <string name="message_content_user_profile_picture">user profile picture</string>
     <string name="undefined_name">UNDEFINED NAME</string>
     <string name="undefined_type">UNDEFINED TYPE</string>
+    <string name="no_friend_requests">No Friend Requests :(</string>
 </resources>

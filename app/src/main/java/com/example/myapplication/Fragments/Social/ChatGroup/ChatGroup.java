@@ -5,7 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment.ChatGroupFragment;
+import com.example.myapplication.Fragments.Social.ChatGroup.OldChatGroupFragment.OldChatGroupFragment;
 import com.example.myapplication.Fragments.Social.Message.Message;
 import com.example.myapplication.Fragments.Social.Message.StudyMaterialMessage;
 import com.example.myapplication.Fragments.Social.Message.TextMessage;
@@ -135,7 +135,7 @@ public class ChatGroup {
         });
     }
 
-    public void getFromDatabase(ChatGroupFragment chatGroupFragment) {
+    public void getFromDatabase(OldChatGroupFragment chatGroupFragment) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         setMemberNames();
         db.collection("Chats").document(dbID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -194,5 +194,7 @@ public class ChatGroup {
         }
     }
 
-
+    public ArrayList<String> getMessageIDS() {
+        return messageIDS;
+    }
 }

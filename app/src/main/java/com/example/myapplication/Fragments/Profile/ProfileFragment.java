@@ -13,7 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.myapplication.Fragments.Profile.FriendRequestFragment.FriendRequestFragment;
+import com.example.myapplication.Fragments.Profile.Query.Filter.FriendRequestFilter;
 import com.example.myapplication.R;
+import com.example.myapplication.StaticHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,6 +42,7 @@ public class ProfileFragment extends Fragment {
     TextView facultyText;
     TextView yearText;
     ImageView editProfileButton;
+    ImageView addFriend;
     User user;
     public ProfileFragment(User user) {
         this.user = user;
@@ -58,6 +62,7 @@ public class ProfileFragment extends Fragment {
         facultyText = view.findViewById(R.id.profile_faculty_text); facultyText.setVisibility(View.GONE);
         yearText = view.findViewById(R.id.profile_year_text); yearText.setVisibility(View.GONE);
         editProfileButton = view.findViewById(R.id.profile_edit_button);
+        addFriend = view.findViewById(R.id.profile_fragment_add_friend);
 
         // Set Text
         if (user.getName() == null || user.getName().length() == 0) {
@@ -82,7 +87,17 @@ public class ProfileFragment extends Fragment {
                         .commit();
             }
         });
+        addFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FriendRequestFragment friendRequestFragment = new FriendRequestFragment(user);
+                StaticHelper.switchFragment(getActivity().getSupportFragmentManager(),friendRequestFragment,null);
+
+            }
+        });
+
         return view;
+
 
 
     }

@@ -8,23 +8,23 @@
     >
 
     <ImageView
-        app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/study_material_image"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:src="@drawable/screen_width_light_grey_rectangle"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="141dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id='@+id/study_material_text'
         android:layout_width="200dp"
         android:layout_height="20dp"
         android:layout_marginStart="52dp"
         android:gravity="left"
         android:text="UNDEFINED STUDY MATERIAL"
-        android:id='@+id/study_material_text'
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/study_material_image"
         app:layout_constraintStart_toStartOf="@+id/study_material_image"
-        app:layout_constraintTop_toTopOf="@+id/study_material_image"/>
+        app:layout_constraintTop_toTopOf="@+id/study_material_image" />
 </androidx.constraintlayout.widget.ConstraintLayout>

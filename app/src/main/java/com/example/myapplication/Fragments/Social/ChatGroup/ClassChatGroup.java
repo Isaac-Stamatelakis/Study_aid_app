@@ -4,16 +4,13 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment.ChatGroupFragment;
+import com.example.myapplication.Fragments.Social.ChatGroup.OldChatGroupFragment.OldChatGroupFragment;
 import com.example.myapplication.Fragments.Social.Message.Message;
-import com.example.myapplication.Fragments.Social.Message.StudyMaterialMessage;
-import com.example.myapplication.Fragments.Social.Message.TextMessage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class ClassChatGroup extends ChatGroup {
@@ -33,7 +30,7 @@ public class ClassChatGroup extends ChatGroup {
 
 
     @Override
-    public void getFromDatabase(ChatGroupFragment chatGroupFragment) {
+    public void getFromDatabase(OldChatGroupFragment chatGroupFragment) {
         super.getFromDatabase(chatGroupFragment);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Chats").document(getDbID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

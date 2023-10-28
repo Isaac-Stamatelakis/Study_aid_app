@@ -18,13 +18,21 @@
         android:weekDayTextAppearance="@style/Theme.CustomCalenderWeekText"
         />
 
+
+
     <ListView
+        android:dividerHeight="5.0sp"
         android:id="@+id/class_fragment_class_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="200dp"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintTop_toBottomOf="@+id/class_calender"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="10.0sp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/CLASS_FRAGMENT_add_class_button"

@@ -13,11 +13,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SchoolClass {
     private String number;
     private String section;
     private String subject;
+    private String instution;
 
     public String getDbID() {
         return dbID;
@@ -87,6 +89,15 @@ public class SchoolClass {
             string.append(this.section);
         }
         return string.toString();
+    }
+    public boolean equal(SchoolClass schoolClass) {
+        return Objects.equals(schoolClass.getSubject(), this.subject) &&
+                Objects.equals(schoolClass.getSection(), this.section) &&
+                Objects.equals(schoolClass.getNumber(), this.number);
+    }
+
+    public String getSubjectAndNumber() {
+        return this.subject + " " + this.number;
     }
 
 }

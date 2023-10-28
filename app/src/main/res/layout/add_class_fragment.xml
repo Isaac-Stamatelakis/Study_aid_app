@@ -16,6 +16,7 @@
         android:clickable="true"
         android:ems="10"
         android:inputType="textPersonName"
+        android:imeOptions="actionDone"
         android:hint="Search Class"
         android:textColorHint="@color/black"
 

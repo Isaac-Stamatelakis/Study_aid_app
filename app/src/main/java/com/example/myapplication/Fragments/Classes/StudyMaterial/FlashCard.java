@@ -30,7 +30,11 @@ public class FlashCard extends StudyMaterial {
         CollectionReference studyMaterialReference = db.collection("StudyMaterial");
         Map<String, Object> studyMaterialInfo = new HashMap<>();
         studyMaterialInfo.put("title", getTitle());
-        studyMaterialInfo.put("content", "Undefined Question&q&UndefinedAnswer&f&");
+        if (getContent() == null) {
+            studyMaterialInfo.put("content", "Undefined Question&q&UndefinedAnswer&f&");
+        } else {
+            studyMaterialInfo.put("content", getContent());
+        }
         studyMaterialInfo.put("type", "flashcard");
         studyMaterialInfo.put("class", classID);
         String id = studyMaterialReference.document().getId();

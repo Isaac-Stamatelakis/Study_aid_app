@@ -3,13 +3,18 @@ package com.example.myapplication.Fragments.Social.Message;
 import android.app.Activity;
 import android.content.Context;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
+
+import com.example.myapplication.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,13 +38,22 @@ public class MessageArrayAdapter extends ArrayAdapter<Message> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
+        Log.e("TESTING",position + ";");
+        Message message = messages.get(position);
         if(view == null) {
-            if (messages.get(position) instanceof TextMessage) {
-                view = new TextMessageViewFactory(context, messages.get(position), memberNames, parent).getView();
-            } else if (messages.get(position) instanceof StudyMaterialMessage) {
-                view = new StudyMaterialMessageViewFactory(context, messages.get(position), memberNames, parent, fragmentManager).getView();
+            view = MessageViewFactory.getView(message,context,parent);
+        }
+        if (view != null) {
+            if (message instanceof TextMessage) {
+                new TextMessageViewSetter(view,(TextMessage) message,memberNames).set();
+                Log.e("TEST","No");
+            } else if (message instanceof StudyMaterialMessage) {
+                Log.e("TEST","TRUe");
+                new StudyMaterialMessageViewSetter(view,(StudyMaterialMessage) message,fragmentManager,memberNames).set();
             }
         }
+
+
 
 
 

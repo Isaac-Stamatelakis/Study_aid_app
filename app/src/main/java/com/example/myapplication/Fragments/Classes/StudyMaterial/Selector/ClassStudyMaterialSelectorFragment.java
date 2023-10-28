@@ -13,13 +13,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 
+import com.example.myapplication.Fragments.Classes.StudyMaterial.AIGenerateFragment;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.FlashcardActivity.FlashCardActivity;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.NoteActivity;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Activities.QuizActivity.QuizActivity;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.FlashCard;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Note;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Quiz;
+import com.example.myapplication.StaticHelper;
 import com.example.myapplication.nInput.AddSingleTextDialogFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -190,7 +193,11 @@ public class ClassStudyMaterialSelectorFragment extends StudyMaterialSelectorFra
                 .setNeutralButton(Html.fromHtml("<font color = '#AEB8FE'>AI Generate</font>"), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        Bundle bundle = new Bundle();
+                        bundle.putString("id",schoolClassID);
+                        bundle.putString("mode",mode);
+                        AIGenerateFragment aiGenerateFragment = new AIGenerateFragment();
+                        StaticHelper.switchFragment(getActivity().getSupportFragmentManager(),aiGenerateFragment,bundle);
                     }
                 })
                 .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>Cancel</font>"), new DialogInterface.OnClickListener() {

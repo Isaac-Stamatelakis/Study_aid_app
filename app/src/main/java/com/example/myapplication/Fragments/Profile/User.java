@@ -24,19 +24,20 @@ import java.util.List;
 import java.util.Map;
 
 public class User {
-    String user_id;
-    String name;
-    String educationLevel;
-    String faculty;
-    ArrayList<String> majors;
-    ArrayList<String> minors;
-    ArrayList<String> schools;
-    String year;
-    String docID;
+    protected String user_id;
+    protected String name;
+    protected String educationLevel;
+    protected String faculty;
+    protected ArrayList<String> majors;
+    protected ArrayList<String> minors;
+    protected ArrayList<String> schools;
+    protected String year;
+    protected String docID;
+    protected ArrayList<String> friendRequestAndroidIDs;
+    protected HashMap<String, String> friends;
 
     public User(String user_id) {
         this.user_id = user_id;
-        this.setUserFromDB();
     }
 
     public void setUserFromDB() {
@@ -54,6 +55,11 @@ public class User {
                     schools = (ArrayList<String>) documentSnapshot.get("School");
                     year = (String) documentSnapshot.get("Year");
                     docID = documentSnapshot.getId();
+                    friendRequestAndroidIDs = new ArrayList<>();
+                    Object friendRequestAndroidIDsValue = documentSnapshot.get("FriendRequests");
+                    if (friendRequestAndroidIDsValue != null) {
+                        friendRequestAndroidIDs = (ArrayList<String>) documentSnapshot.get("FriendRequests");
+                    }
                 }
             }
         });
@@ -140,5 +146,30 @@ public class User {
 
     public void setYear(String year) {
         this.year = year;
+    }
+    public String getDocID() {
+        return docID;
+    }
+    public void setDocID(String docID) {
+        this.docID = docID;
+    }
+
+    public ArrayList<String> getFriendRequestAndroidIDs() {
+        return friendRequestAndroidIDs;
+    }
+
+    public void setFriendRequestAndroidIDs(ArrayList<String> friendRequestAndroidIDs) {
+        this.friendRequestAndroidIDs = friendRequestAndroidIDs;
+    }
+    public HashMap<String, String> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(HashMap<String, String> friends) {
+        this.friends = friends;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 }

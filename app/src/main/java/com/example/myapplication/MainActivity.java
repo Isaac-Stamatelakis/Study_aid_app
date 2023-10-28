@@ -1,61 +1,49 @@
 package com.example.myapplication;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.OperationCanceledException;
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.ui.AppBarConfiguration;
 
+import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+import com.example.myapplication.Fragments.Classes.StudyMaterial.AITaskManager;
 import com.example.myapplication.Fragments.Profile.EditProfileFragment;
-import com.example.myapplication.Fragments.Profile.ProfileFragment;
 import com.example.myapplication.Fragments.Profile.User;
-import com.example.myapplication.databinding.ActivityMainBinding;
-import com.example.myapplication.nInput.AddSingleTextDialogFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.firestore.AggregateField;
 import com.google.firebase.firestore.AggregateQuery;
 import com.google.firebase.firestore.AggregateQuerySnapshot;
 import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import kotlinx.coroutines.GlobalScope;
+
 
 public class MainActivity extends AppCompatActivity {
     private Boolean testing;
     private TabLayout tabLayout;
+    private static Activity main;
     private com.example.myapplication.TabManager tabManager;
     FirebaseFirestore db;
     private String user_id;
@@ -65,16 +53,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         db = FirebaseFirestore.getInstance();
         // Views
+        main = this;
         tabLayout = findViewById(R.id.tab_manager);
 
+        if (!Python.isStarted()) {
+            Python.start(new AndroidPlatform(this));
+        }
         // Tab Manager
         tabLayout.selectTab(tabLayout.getTabAt(1));
         tabManager = new com.example.myapplication.TabManager(this);
         tabManager.switchFragment(1);
-
-
         this.handleAndroidID();
 
+        //AI TaskManager
+        AITaskManager.initalize(this);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -96,6 +88,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public static Activity getActivity() {
+        return main;
+    }
     private void handleAndroidID() {
         try {
             getApplication().getClassLoader().loadClass("com.robotium.solo.Solo");
@@ -139,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         User user = new User(user_id);
+                                                        user.setDBToUser();
                                                         FragmentManager fragmentManager = getSupportFragmentManager();
                                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                                         fragmentTransaction.replace(R.id.container, new EditProfileFragment(user)).addToBackStack(null);

@@ -30,7 +30,11 @@ public class Note extends StudyMaterial {
         CollectionReference studyMaterialReference = db.collection("StudyMaterial");
         Map<String, Object> studyMaterialInfo = new HashMap<>();
         studyMaterialInfo.put("title", getTitle());
-        studyMaterialInfo.put("content", "");
+        if (getContent() == null) {
+            studyMaterialInfo.put("content", "");
+        } else {
+            studyMaterialInfo.put("content", getContent());
+        }
         studyMaterialInfo.put("type", "note");
         studyMaterialInfo.put("class", classID);
         String id = studyMaterialReference.document().getId();

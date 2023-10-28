@@ -1,6 +1,7 @@
 package com.example.myapplication.Fragments.Social.Message;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,36 +15,22 @@ import com.example.myapplication.R;
 import java.util.HashMap;
 
 public abstract class MessageViewFactory {
+    private MessageViewFactory() {
 
-    private Context context;
-    private Message message;
-    private HashMap<String, String> memberNames;
-    private ViewGroup parent;
-
-    public Context getContext() {
-        return context;
     }
-
-    public Message getMessage() {
-        return message;
+    public static View getView(Message message, Context context, ViewGroup parent) {
+        if (message instanceof TextMessage) {
+            return generateTextMessage(context,parent);
+        } else if (message instanceof StudyMaterialMessage) {
+            return generateStudyMaterialMessage(context,parent);
+        }
+        return null;
     }
-
-    public HashMap<String, String> getMemberNames() {
-        return memberNames;
+    protected static View generateTextMessage(Context context, ViewGroup parent) {
+        return LayoutInflater.from(context).inflate(R.layout.text_message_content, parent,false);
     }
-
-    public ViewGroup getParent() {
-        return parent;
+    protected static View generateStudyMaterialMessage(Context context, ViewGroup parent) {
+        return LayoutInflater.from(context).inflate(R.layout.studymaterial_message_content, parent,false);
     }
-
-    public MessageViewFactory(Context context, Message message, HashMap<String, String> memberNames, ViewGroup parent) {
-        this.context = context;
-        this.message = message;
-        this.memberNames = memberNames;
-        this.parent = parent;
-    }
-
-    public abstract View getView();
-
 
 }

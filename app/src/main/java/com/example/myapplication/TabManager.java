@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.myapplication.Fragments.Classes.ClassSelectorFragment.ClassSelectorFragment;
 import com.example.myapplication.Fragments.Profile.ProfileFragment;
 import com.example.myapplication.Fragments.Profile.User;
-import com.example.myapplication.Fragments.Social.SocialSelectorFragment;
+import com.example.myapplication.Fragments.Social.Selector.SocialSelectorFragment;
 
 public class TabManager {
     private FragmentManager fragmentManager;
@@ -21,6 +21,7 @@ public class TabManager {
     public TabManager(@NonNull FragmentActivity fragmentActivity) {
         fragmentManager = fragmentActivity.getSupportFragmentManager();
         user = new User((Settings.Secure.getString(fragmentActivity.getContentResolver(), Settings.Secure.ANDROID_ID)));
+        user.setUserFromDB();
     }
 
     public void replaceFragment(Fragment fragment, String transactionTAG){

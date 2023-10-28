@@ -5,19 +5,28 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
 import android.provider.Settings;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.myapplication.Fragments.Classes.SchoolClass.SchoolClass;
 import com.example.myapplication.Fragments.Classes.SchoolClass.SchoolClassArrayAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.AggregateQuery;
 import com.google.firebase.firestore.AggregateQuerySnapshot;
@@ -33,16 +42,20 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class AddClassFragment extends Fragment {
     ListView classList;
     ArrayList<SchoolClass> classes;
+    ArrayList<SchoolClass> displayedClasses;
     FirebaseFirestore db;
     SchoolClassArrayAdapter classAdapter;
     EditText searchBar;
     Button manualAddButton;
     Fragment thisFragment;
     String user_id;
+    private final int requiredCountToShow = 2;
+    private static String TAG = "AddClassFragment";
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.add_class_fragment, container, false);
@@ -54,23 +67,129 @@ public class AddClassFragment extends Fragment {
         thisFragment = this;
         user_id = (Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID));
 
-        classes = new ArrayList<SchoolClass>();
-        classes.add(new SchoolClass("301",null,"CMPUT"));
-        classes.add(new SchoolClass("466",null,"CMPUT"));
-        classAdapter = new SchoolClassArrayAdapter(this.getActivity(),classes);
+        getClasses();
+
+        //classes.add(new SchoolClass("301",null,"CMPUT"));
+        //classes.add(new SchoolClass("466",null,"CMPUT"));
+        classAdapter = new SchoolClassArrayAdapter(this.getActivity(),displayedClasses);
         classList.setAdapter(classAdapter);
+
 
         return view;
 
 
     }
+    private void getClasses() {
+        classes = new ArrayList<>();
+        displayedClasses = new ArrayList<>();
+        db.collection("Classes").whereEqualTo("user_id",user_id).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                ArrayList<SchoolClass> ownedClasses = new ArrayList<>();
+                for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
+                    ownedClasses.add(new SchoolClass(
+                            queryDocumentSnapshot.getString("Number"),
+                            queryDocumentSnapshot.getString("Section"),
+                            queryDocumentSnapshot.getString("Subject")
+                    ));
+                }
+                db.collection("Users").whereEqualTo("user_id",user_id).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        ArrayList<ClassCounter> institutionSchoolClasses = new ArrayList<>();
+                        ArrayList<String> institutions = (ArrayList<String>) queryDocumentSnapshots.getDocuments().get(0).get("School");
+                        if (institutions == null) {
+                            return;
+                        }
+                        for(String institution : institutions) {
+                            db.collection("Classes").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots) {
+                                        if (!institution.equals(querySnapshot.getString("Institution"))) {
+                                            continue;
+                                        }
+                                        SchoolClass schoolClass = (new SchoolClass(
+                                                (String) querySnapshot.get("Number"),
+                                                (String) querySnapshot.get("Section"),
+                                                (String) querySnapshot.get("Subject")
+                                        ));
+                                        boolean owned = false;
+                                        for (SchoolClass ownedClass : ownedClasses) {
+                                            if (schoolClass.equal(ownedClass)) {
+                                                owned = true;
+                                                break;
+                                            }
+                                        }
+                                        if (owned) {
+                                            continue;
+                                        }
+
+                                        boolean found = false;
+                                        for (ClassCounter classCounter : institutionSchoolClasses) {
+                                            SchoolClass counterClass = classCounter.schoolClass;
+                                            if (schoolClass.equal(counterClass)){
+                                                classCounter.count ++;
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!found) {
+                                            institutionSchoolClasses.add(new ClassCounter(1,schoolClass));
+                                        }
+                                    }
+                                    ArrayList<SchoolClass> classesToShow = new ArrayList<>();
+                                    for (ClassCounter classCounter : institutionSchoolClasses) {
+                                        if (classCounter.count >= requiredCountToShow) {
+                                            classesToShow.add(classCounter.schoolClass);
+                                        }
+                                    }
+                                    institutionQueryCompleted(classesToShow);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e(TAG,e.toString());
+                                }
+                            });
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.toString());
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG,e.toString());
+            }
+        });
+    }
+
+    private void institutionQueryCompleted(ArrayList<SchoolClass> classesToAdd) {
+        classes.addAll(classesToAdd);
+        displayedClasses.addAll(classesToAdd);
+        classAdapter.notifyDataSetChanged();
+    }
+    private class ClassCounter {
+        public int count;
+        public SchoolClass schoolClass;
+        public ClassCounter(int count, SchoolClass schoolClass) {
+            this.count = count;
+            this.schoolClass = schoolClass;
+        }
+    }
+
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         classList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SchoolClass schoolClass = classes.get(position);
+                SchoolClass schoolClass = displayedClasses.get(position);
 
 
                 StringBuilder dialogTitle = new StringBuilder().append("<font color='#758BFD'>Do you want to add ")
@@ -110,7 +229,36 @@ public class AddClassFragment extends Fragment {
 
             }
         });
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                sortClasses(searchBar.getText().toString());
+            }
+        });
+    }
+    private void sortClasses(String text) {
+
+        displayedClasses.clear();
+        if (text.isEmpty()) {
+            displayedClasses.addAll(classes);
+        } else {
+            for (SchoolClass schoolClass : classes) {
+                if (schoolClass.getSubjectAndNumber().toLowerCase().contains(text)) {
+                    displayedClasses.add(schoolClass);
+                }
+            }
+        }
+        classAdapter.notifyDataSetChanged();
     }
     /*
     Recieves class information from ManualAddClassDialogFragment and attempts to add class to database

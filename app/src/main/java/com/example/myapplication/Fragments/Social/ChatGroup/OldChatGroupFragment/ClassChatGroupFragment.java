@@ -1,4 +1,4 @@
-package com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment;
+package com.example.myapplication.Fragments.Social.ChatGroup.OldChatGroupFragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,14 +7,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.example.myapplication.Fragments.Classes.ClassSelectorFragment.ChatClassSelectorFragment;
 import com.example.myapplication.Fragments.Classes.StudyMaterial.Selector.ChatStudyMaterialSelectorFragment;
-import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroup;
 import com.example.myapplication.Fragments.Social.ChatGroup.ClassChatGroup;
 
-public class NonClassChatGroupFragment extends ChatGroupFragment {
-    public NonClassChatGroupFragment(ChatGroup chatGroup) {
-        super(chatGroup);
+public class ClassChatGroupFragment extends OldChatGroupFragment {
+    private ClassChatGroup classChatGroup;
+    public ClassChatGroupFragment(ClassChatGroup classChatGroup) {
+        super(classChatGroup);
+        this.classChatGroup = classChatGroup;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class NonClassChatGroupFragment extends ChatGroupFragment {
     }
     @Override
     public void handleStudyMaterialShare() {
-        ChatClassSelectorFragment chatClassSelectorFragment = new ChatClassSelectorFragment(chatGroup);
-        switchFragment(chatClassSelectorFragment, null);
+        ChatStudyMaterialSelectorFragment studyMaterialSelectorFragmentChat = new ChatStudyMaterialSelectorFragment(classChatGroup.getClassID(), chatGroup);
+        switchFragment(studyMaterialSelectorFragmentChat, null);
     }
 }

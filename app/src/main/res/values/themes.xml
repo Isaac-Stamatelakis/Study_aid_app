@@ -38,4 +38,10 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="AIBackground">
+        <item name="android:windowBackground">@drawable/istockphoto_1432955867_612x612</item>
+    </style>
+
+
+
 </resources>

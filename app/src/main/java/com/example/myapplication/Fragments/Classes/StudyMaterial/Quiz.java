@@ -44,8 +44,9 @@ public class Quiz extends StudyMaterial {
                 // the best solution to me is to encourage it and offset the quizparts by 1.
                 HashMap<String, String> quizMap = new HashMap<String, String>();
                 String[] quizParts = rawQuestionInfo.split(separator_possible_answer);
+                //Log.d("Test",quizParts[0]);
                 quizMap.put("question", quizParts[1]); // Question is always first
-                int i = 2;
+                int i = 1;
                 while (i < quizParts.length) {
                     Log.d("TEST", quizParts[i]);
                     if (quizParts[i].contains(separator_correct_answer)) {
@@ -71,7 +72,12 @@ public class Quiz extends StudyMaterial {
         CollectionReference studyMaterialReference = db.collection("StudyMaterial");
         Map<String, Object> studyMaterialInfo = new HashMap<>();
         studyMaterialInfo.put("title", getTitle());
-        studyMaterialInfo.put("content", "");
+        if (getContent() == null) {
+            studyMaterialInfo.put("content", "");
+        } else {
+            studyMaterialInfo.put("content", getContent());
+        }
+
         studyMaterialInfo.put("type", "quiz");
         studyMaterialInfo.put("class", classID);
         studyMaterialInfo.put("attempts", Collections.emptyList());
