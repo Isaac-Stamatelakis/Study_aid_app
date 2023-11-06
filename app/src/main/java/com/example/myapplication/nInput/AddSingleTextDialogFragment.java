@@ -30,9 +30,9 @@ public class AddSingleTextDialogFragment extends DialogFragment {
      * Due to a bug in with edittext arrayadpters and imm in listviews,
      * we require seperate dialogs for each input amount :)
      */
-    Activity activity;
-    String hint1;
-    EditText hint1Text;
+    protected Activity activity;
+    protected String hint1;
+    protected EditText hint1Text;
     public AddSingleTextDialogFragment(Activity activity, String hint1) {
         this.hint1 = hint1;
         this.activity = activity;
@@ -48,15 +48,12 @@ public class AddSingleTextDialogFragment extends DialogFragment {
         builder.setView(text_input_dialog);
 
         hint1Text = text_input_dialog.findViewById(R.id.add_single_dialog_hint1);
-
+        hint1Text.setHint(hint1);
         builder
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent().putExtra(hint1, hint1Text.getText().toString());
-                        getTargetFragment().onActivityResult(getTargetRequestCode(), activity.RESULT_OK, intent);
-                        dismiss();
-
+                        positiveButtonClicked();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -67,5 +64,10 @@ public class AddSingleTextDialogFragment extends DialogFragment {
                 });
         return builder.create();
 
+    }
+    protected void positiveButtonClicked() {
+        Intent intent = new Intent().putExtra(hint1, hint1Text.getText().toString());
+        getTargetFragment().onActivityResult(getTargetRequestCode(), activity.RESULT_OK, intent);
+        dismiss();
     }
 }

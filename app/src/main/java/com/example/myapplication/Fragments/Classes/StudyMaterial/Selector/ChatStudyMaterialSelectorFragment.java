@@ -9,6 +9,8 @@ import android.widget.AdapterView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.myapplication.Fragments.Classes.StudyMaterial.StudyMaterial;
+import com.example.myapplication.Fragments.Profile.User;
 import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroup;
 import com.example.myapplication.Fragments.Social.ChatGroup.ClassChatGroup;
 import com.example.myapplication.Fragments.Social.ChatGroup.FriendChatGroup;
@@ -24,6 +26,7 @@ public class ChatStudyMaterialSelectorFragment extends StudyMaterialSelectorFrag
         super(schoolClassID);
         this.chatGroup = chatGroup;
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,15 +49,18 @@ public class ChatStudyMaterialSelectorFragment extends StudyMaterialSelectorFrag
      * @param position
      */
     private void listViewClickHandler(int position) {
-        StudyMaterialMessage studyMaterialMessage = new StudyMaterialMessage(user_id, LocalDateTime.now(), arrayAdapterList.get(position).getdbID());
+        StudyMaterialMessage studyMaterialMessage = new StudyMaterialMessage(new User(user_id), LocalDateTime.now(), new StudyMaterial(null,null,arrayAdapterList.get(position).getdbID()));
         chatGroup.addMessage(studyMaterialMessage);
         chatGroup.addMessageToDB(studyMaterialMessage, user_id, "studymaterial");
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        /*
         if (chatGroup instanceof ClassChatGroup) {
             fragmentManager.popBackStack();
         } else if (chatGroup instanceof StudyChatGroup || chatGroup instanceof FriendChatGroup) {
             fragmentManager.popBackStack(); fragmentManager.popBackStack();
         }
+        */
+        fragmentManager.popBackStack(); fragmentManager.popBackStack();
 
     }
 

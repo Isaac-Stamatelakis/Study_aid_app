@@ -8,7 +8,7 @@
 
     <ListView
         android:id="@+id/friend_request_list"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="500dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -17,6 +17,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:backgroundTint="@color/cornflower_blue"
+        android:textColor="@color/antiflash_white"
+        android:text="Load more friend requests"
         android:id="@+id/friend_request_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

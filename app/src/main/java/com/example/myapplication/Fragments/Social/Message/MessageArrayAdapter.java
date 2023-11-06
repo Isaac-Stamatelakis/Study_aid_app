@@ -14,64 +14,46 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment.ChatGroupFragment;
 import com.example.myapplication.R;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MessageArrayAdapter extends ArrayAdapter<Message> {
-    private ArrayList<Message> messages;
-    private Context context;
-    private HashMap<String, String> memberNames;
-    private FragmentManager fragmentManager;
-    String user_id;
+    protected ArrayList<Message> messages;
+    protected Context context;
+    protected FragmentManager fragmentManager;
+    protected ChatGroupFragment chatGroupFragment;
+    protected String user_id;
 
-    public MessageArrayAdapter(Context context, ArrayList<Message> messages, HashMap<String, String> memberNames, FragmentManager fragmentManager) {
+    public MessageArrayAdapter(Context context, ArrayList<Message> messages, FragmentManager fragmentManager, ChatGroupFragment chatGroupFragment) {
         super(context,0,messages);
         this.messages = messages;
         this.context = context;
-        this.memberNames = memberNames;
         this.fragmentManager = fragmentManager;
+        this.chatGroupFragment = chatGroupFragment;
         user_id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
-        Log.e("TESTING",position + ";");
         Message message = messages.get(position);
         if(view == null) {
             view = MessageViewFactory.getView(message,context,parent);
         }
         if (view != null) {
             if (message instanceof TextMessage) {
-                new TextMessageViewSetter(view,(TextMessage) message,memberNames).set();
-                Log.e("TEST","No");
+                new TextMessageViewSetter(view,(TextMessage) message,chatGroupFragment).set();
             } else if (message instanceof StudyMaterialMessage) {
-                Log.e("TEST","TRUe");
-                new StudyMaterialMessageViewSetter(view,(StudyMaterialMessage) message,fragmentManager,memberNames).set();
+                new StudyMaterialMessageViewSetter(view,(StudyMaterialMessage) message,chatGroupFragment).set();
             }
         }
-
-
-
-
-
         return view;
     }
-
-    public ArrayList<Message> getMessages() {
-        return messages;
-    }
-
-    public Context getMessageContext() {
-        return context;
-    }
-
-    public HashMap<String, String> getMemberNames() {
-        return memberNames;
-    }
-
     public String getUser_id() {
         return user_id;
     }

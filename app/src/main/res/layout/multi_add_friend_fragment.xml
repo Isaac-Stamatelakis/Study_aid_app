@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <EditText
         android:id="@+id/add_friend_fragment_search"
         android:layout_width="match_parent"
@@ -15,6 +14,7 @@
         android:layout_marginTop="50dp"
         android:clickable="true"
         android:ems="10"
+        android:backgroundTint="@color/black"
         android:inputType="textPersonName"
         android:imeOptions="actionDone"
         android:hint="Search User"
@@ -51,4 +51,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Button
+        android:id="@+id/multi_add_friend_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/UT_orange"
+        android:text="Add Friends"
+        android:textColor="@color/antiflash_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_friend_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

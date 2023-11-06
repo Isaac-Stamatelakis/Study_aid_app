@@ -47,24 +47,26 @@ public class User {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 for (DocumentSnapshot documentSnapshot: value.getDocuments()) {
                     // There will only ever be one user but whatever
-                    name = (String) documentSnapshot.get("Name");
-                    educationLevel = (String) documentSnapshot.get("Education_level");
-                    faculty = (String) documentSnapshot.get("Faculty");
-                    majors = (ArrayList<String>) documentSnapshot.get("Major");
-                    minors = (ArrayList<String>) documentSnapshot.get("Minor");
-                    schools = (ArrayList<String>) documentSnapshot.get("School");
-                    year = (String) documentSnapshot.get("Year");
-                    docID = documentSnapshot.getId();
-                    friendRequestAndroidIDs = new ArrayList<>();
-                    Object friendRequestAndroidIDsValue = documentSnapshot.get("FriendRequests");
-                    if (friendRequestAndroidIDsValue != null) {
-                        friendRequestAndroidIDs = (ArrayList<String>) documentSnapshot.get("FriendRequests");
-                    }
+                    setUserToDocument(documentSnapshot);
                 }
             }
         });
     }
-
+    public void setUserToDocument(DocumentSnapshot documentSnapshot) {
+        name = (String) documentSnapshot.get("Name");
+        educationLevel = (String) documentSnapshot.get("Education_level");
+        faculty = (String) documentSnapshot.get("Faculty");
+        majors = (ArrayList<String>) documentSnapshot.get("Major");
+        minors = (ArrayList<String>) documentSnapshot.get("Minor");
+        schools = (ArrayList<String>) documentSnapshot.get("School");
+        year = (String) documentSnapshot.get("Year");
+        docID = documentSnapshot.getId();
+        friendRequestAndroidIDs = new ArrayList<>();
+        Object friendRequestAndroidIDsValue = documentSnapshot.get("FriendRequests");
+        if (friendRequestAndroidIDsValue != null) {
+            friendRequestAndroidIDs = (ArrayList<String>) documentSnapshot.get("FriendRequests");
+        }
+    }
     public void setDBToUser() {
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("Major", this.majors);
@@ -87,7 +89,6 @@ public class User {
             }
         });
     }
-
     public String getUser_id() {
         return user_id;
     }

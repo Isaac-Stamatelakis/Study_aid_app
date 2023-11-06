@@ -13,4 +13,5 @@ public class SelectFriendUSQFragment extends StandardUserSearchFragment {
         return userSearchQuery;
     }
 
+
 }

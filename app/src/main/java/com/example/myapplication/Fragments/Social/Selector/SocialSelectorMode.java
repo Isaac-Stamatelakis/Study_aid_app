@@ -1,14 +1,23 @@
 package com.example.myapplication.Fragments.Social.Selector;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.provider.Settings;
+import android.text.Html;
 import android.util.Log;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
 
 import com.example.myapplication.CustomQuery;
 import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroup;
 import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment.ChatGroupFragment;
 import com.example.myapplication.Fragments.Social.ChatGroup.FriendChatGroup;
 import com.example.myapplication.StaticHelper;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -37,8 +46,58 @@ public abstract class SocialSelectorMode {
         StaticHelper.switchFragment(socialSelectorFragment.getActivity().getSupportFragmentManager(),chatGroupFragment,null);
     }
 
-    protected void onDelete() {
+    protected void onDeleteRequest(int position,String user_id) {
+        new AlertDialog.Builder(socialSelectorFragment.getActivity())
+                .setTitle("Do you want to delete")
+                .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Delete</font>"), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteUserFromChatGroup(position,user_id);
+                    }
+                })
+                .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>Cancel</font>"), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
+                    }
+                })
+                .show();
+
+
+    }
+    protected void deleteUserFromChatGroup(int position, String user_id) {
+
+        ChatGroup chatGroup = chatGroups.get(position);
+        chatGroups.remove(position);
+        socialSelectorFragment.chatGroupArrayAdapter.notifyDataSetChanged();
+        DocumentReference documentReference = db.collection("Chats").document(chatGroup.getDbID());
+        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Object val = documentSnapshot.get("members");
+                if (val == null) {
+                    return;
+                }
+                ArrayList<String> memberIds = (ArrayList<String>) val;
+                memberIds.remove(user_id);
+                documentReference.update("members",memberIds).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("ChatGroupSelector","Removed user " + user_id + " from chat " + chatGroup.getDbID());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("ChatGroupSelector",e.toString());
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
     }
     protected void onQueryCompleted(ArrayList<ChatGroup> chatGroups) {
         this.chatGroups = chatGroups;
@@ -60,7 +119,7 @@ public abstract class SocialSelectorMode {
         if (docVal != null) {
             messageIDs = (ArrayList<String>) docVal;
         }
-        ChatGroup chatGroup = new ChatGroup(getName(snapshot),members,null,snapshot.getId());
+        ChatGroup chatGroup = new ChatGroup(getName(snapshot),null,snapshot.getId());
         chatGroup.setMessageIDS(messageIDs);
         return chatGroup;
     }

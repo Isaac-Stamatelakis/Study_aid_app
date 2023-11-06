@@ -57,7 +57,7 @@ public class FriendChatQuery {
         } else {
             return null;
         }
-        return new FriendChatGroup("FriendChatGroup",members,null,queryDocumentSnapshot.getId());
+        return new FriendChatGroup("FriendChatGroup",null,queryDocumentSnapshot.getId());
     }
     protected void queryCompleted(ArrayList<FriendChatGroup> friendChatGroups) {
 

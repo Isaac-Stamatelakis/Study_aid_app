@@ -40,48 +40,51 @@ import java.util.ArrayList;
 
 
 public class ChatClassSelectorFragment extends AbstractClassSelectorFragment {
-    ChatGroup chatGroup;
-    public ChatClassSelectorFragment(ChatGroup chatGroup) {
-        this.chatGroup = chatGroup;
+    public ChatClassSelectorFragment() {
+
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater,container,savedInstanceState);
-        addClassButton.setVisibility(View.INVISIBLE);
-        calendarView.setVisibility(View.INVISIBLE);
-
         selectClass();
 
         return view;
 
 
     }
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        classList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+    @Override
+    protected void classSelected(SchoolClass schoolClass) {
+        super.classSelected(schoolClass);
+        DocumentReference documentReference = db.collection("Classes").document(schoolClass.getDbID());
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SchoolClass schoolClass = classes.get(position);
-                DocumentReference documentReference = db.collection("Classes").document(schoolClass.getDbID());
-                documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            Log.d(TAG, documentSnapshot.getId());
-                            ChatStudyMaterialSelectorFragment chatStudyMaterialSelectorFragment = new ChatStudyMaterialSelectorFragment(documentSnapshot.getId(), chatGroup);
-                            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                            fragmentManager.beginTransaction()
-                                    .replace(R.id.container, chatStudyMaterialSelectorFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-                        } else {
-                            Log.e(TAG, "Failed to go to class");
-                        }
-                    }
-                });
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    documentLoaded(documentSnapshot);
+                } else {
+                    Log.e(TAG, "Failed to go to class");
+                }
             }
         });
+    }
+    protected void documentLoaded(DocumentSnapshot documentSnapshot) {
+
+    }
+    @Override
+    protected void setViews(View view) {
+        classList = view.findViewById(R.id.class_fragment_class_list);
+    }
+
+    @Override
+    protected void setViewListeners(View view) {
+        super.setViewListeners(view);
+    }
+
+    @Override
+    protected View inflateView(LayoutInflater inflater, ViewGroup container) {
+        return inflater.inflate(R.layout.chat_class_selector_fragment, container, false);
     }
 
     @Override

@@ -5,7 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.myapplication.Fragments.Social.ChatGroup.OldChatGroupFragment.OldChatGroupFragment;
+import com.example.myapplication.Fragments.Profile.User;
 import com.example.myapplication.Fragments.Social.Message.Message;
 import com.example.myapplication.Fragments.Social.Message.StudyMaterialMessage;
 import com.example.myapplication.Fragments.Social.Message.TextMessage;
@@ -28,14 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChatGroup {
-    private String name;
+    protected String name;
     private String TAG = "ChatGroup";
-    private ArrayList<String> memberIDS;
-
-
-    private HashMap<String, String> memberNames;
-    private ArrayList<Message> messages;
-    private ArrayList<String> messageIDS;
+    protected ArrayList<Message> messages;
+    protected ArrayList<String> messageIDS;
 
     public String getDbID() {
         return dbID;
@@ -46,14 +42,6 @@ public class ChatGroup {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setMemberIDS(ArrayList<String> memberIDS) {
-        this.memberIDS = memberIDS;
-    }
-
-    public void setMemberNames(HashMap<String, String> memberNames) {
-        this.memberNames = memberNames;
     }
 
     public void setMessages(ArrayList<Message> messages) {
@@ -68,12 +56,10 @@ public class ChatGroup {
         this.dbID = dbID;
     }
 
-    public ChatGroup(String name, ArrayList<String> members, ArrayList<Message> messages, String dbID) {
+    public ChatGroup(String name, ArrayList<Message> messages, String dbID) {
         this.name = name;
-        this.memberIDS = members;
         this.messages = messages;
         this.dbID = dbID;
-        this.memberNames = new HashMap<>();
     }
 
     public ArrayList<Message> getMessages() {
@@ -82,15 +68,12 @@ public class ChatGroup {
     public String getName() {
         return this.name;
     }
-    public ArrayList<String> getMemberIDS() {
-        return this.memberIDS;
-    }
 
     public void addMessage(Message message) {
         this.messages.add(message);
     }
-    public HashMap<String, String> getMemberNames() {
-        return memberNames;
+    public void addMessageToFront(Message message) {
+        this.messages.add(0,message);
     }
 
     public void addMessageToDB(Message message, String user_id, String type) {
@@ -133,65 +116,6 @@ public class ChatGroup {
                 }
             }
         });
-    }
-
-    public void getFromDatabase(OldChatGroupFragment chatGroupFragment) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        setMemberNames();
-        db.collection("Chats").document(dbID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot =  task.getResult();
-                    name = (String) documentSnapshot.get("name");
-                    memberIDS = (ArrayList<String>) documentSnapshot.get("members");
-                    messageIDS = (ArrayList<String>) documentSnapshot.get("messages");
-                    for (String messageID : messageIDS) {
-                        db.collection("Messages").document(messageID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    DocumentSnapshot documentSnapshot = task.getResult();
-                                    String owner = (String) documentSnapshot.get("owner");
-                                    LocalDateTime date = LocalDateTime.parse((String) documentSnapshot.get("date"));
-                                    String content = (String) documentSnapshot.get("content");
-                                    switch ((String) documentSnapshot.get("type")) {
-                                        case "text":
-                                            messages.add(new TextMessage(owner, date, content));
-                                            break;
-                                        case "studymaterial":
-                                            messages.add(new StudyMaterialMessage(owner, date, content));
-                                            break;
-                                    }
-                                    chatGroupFragment.updateAdapter();
-                                } else {
-                                    Log.e(TAG, "getFromDatabase could not get message reference");
-                                }
-                            }
-                        });
-                    }
-                } else {
-                    Log.e(TAG, "getFromDatabase could not get chatgroup reference");
-                }
-            }
-        });
-    }
-
-
-    public void setMemberNames() {
-        for (String memberID : memberIDS) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            Query query = db.collection("Users").whereEqualTo("user_id", memberID);
-            query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    for (QueryDocumentSnapshot queryDocumentSnapshot : value) {
-                        memberNames.put(memberID, (String) queryDocumentSnapshot.get("Name"));
-                        Log.d("TEST", (String) queryDocumentSnapshot.get("Name"));
-                    }
-                }
-            });
-        }
     }
 
     public ArrayList<String> getMessageIDS() {

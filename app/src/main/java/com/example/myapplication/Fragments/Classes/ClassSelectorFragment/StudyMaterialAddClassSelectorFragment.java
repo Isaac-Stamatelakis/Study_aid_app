@@ -45,34 +45,7 @@ public class StudyMaterialAddClassSelectorFragment extends AbstractClassSelector
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SchoolClass schoolClass = classes.get(position);
-                DocumentReference documentReference = db.collection("Classes").document(schoolClass.getDbID());
-                documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            Log.d(TAG, documentSnapshot.getId());
-                            new AlertDialog.Builder(getContext())
-                                    .setTitle(Html.fromHtml("Do you want to copy this class?"))
-                                    .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Confirm</font>"), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            studyMaterial.addToDatabase(documentSnapshot.getId());
-                                            getActivity().getSupportFragmentManager().popBackStack();
-                                        }
-                                    })
-                                    .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>Cancel</font>"), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
 
-                                        }
-                                    })
-                                    .show();
-                        } else {
-                            Log.e(TAG, "Failed to go to class");
-                        }
-                    }
-                });
             }
         });
     }

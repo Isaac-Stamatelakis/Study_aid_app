@@ -51,7 +51,7 @@ public class StudyMaterialSelectorFragment extends Fragment{
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.class_fragment, container, false);
+        View view = inflateView(inflater,container);
         // Views
         studyMaterialList = view.findViewById(R.id.class_fragment_study_material_list);
         modeSelectors = new HashMap<>();
@@ -82,6 +82,9 @@ public class StudyMaterialSelectorFragment extends Fragment{
 
     }
 
+    protected View inflateView(LayoutInflater inflater, ViewGroup container) {
+        return inflater.inflate(R.layout.class_fragment, container, false);
+    }
     /**
      * Switches fragments
      * @param fragment: fragment to be switched to

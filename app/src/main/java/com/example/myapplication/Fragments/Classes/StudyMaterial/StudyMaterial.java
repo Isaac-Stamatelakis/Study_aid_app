@@ -18,7 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-public abstract class StudyMaterial {
+public class StudyMaterial {
     private String title;
     private String content;
     private String dbID;
@@ -36,7 +36,9 @@ public abstract class StudyMaterial {
     public String getdbID() {return this.dbID;}
 
 
-    public abstract void addToDatabase(String classID);
+    public void addToDatabase(String classID) {
+
+    }
 
 
 }

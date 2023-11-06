@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import android.widget.ListView;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupArrayAdapter;
+import com.example.myapplication.Fragments.Social.Selector.StudyGroup.StudyGroupSelectorMode;
 import com.example.myapplication.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -55,6 +55,11 @@ public class SocialSelectorFragment extends Fragment{
         return view;
 
     }
+    @Override
+    public void onResume() {
+        setArrayAdapter();
+        super.onResume();
+    }
 
     protected void setViewListeners() {
         chatGroupArrayAdapter = new ChatGroupArrayAdapter(getContext(),new ArrayList<>());
@@ -74,21 +79,7 @@ public class SocialSelectorFragment extends Fragment{
         chatGroupList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Do you want to delete")
-                        .setPositiveButton(Html.fromHtml("<font color = '#AEB8FE'>Delete</font>"), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                socialSelectorModes.get(currentMode).onDelete();
-                            }
-                        })
-                        .setNegativeButton(Html.fromHtml("<font color = '#AEB8FE'>Cancel</font>"), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .show();
+                socialSelectorModes.get(currentMode).onDeleteRequest(position,user_id);
                 return true;
             }
         });

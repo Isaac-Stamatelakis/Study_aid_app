@@ -4,26 +4,29 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.myapplication.Fragments.Profile.User;
+import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroupFragment.ChatGroupFragment;
 import com.example.myapplication.R;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 
 public class TextMessageViewSetter extends MessageViewSetter{
-    protected TextMessage textMessage;
-    protected HashMap<String, String> memberNames;
-    public TextMessageViewSetter(View view, TextMessage textMessage, HashMap<String, String> memberNames) {
-        super(view);
-        this.textMessage = textMessage;
-        this.memberNames = memberNames;
+    public TextMessageViewSetter(View view, TextMessage textMessage, ChatGroupFragment chatGroupFragment) {
+        super(view,textMessage,chatGroupFragment);
     }
 
     @Override
     public void set() {
-        TextView messageText = view.findViewById(R.id.studymaterial_message_content_name);
-        TextView userText = view.findViewById(R.id.studymaterial_message_content_user);
-        TextView dateText = view.findViewById(R.id.studymaterial_message_content_date);
-        messageText.setText(textMessage.getContent());
-        userText.setText(memberNames.get(textMessage.getOwner()));
-        dateText.setText(textMessage.getDate().toString());
+        userText = view.findViewById(R.id.text_message_content_user);
+        dateText = view.findViewById(R.id.text_message_content_date);
+        imageView = view.findViewById(R.id.text_message_content_image);
+
+        TextView messageText = view.findViewById(R.id.text_message_content_text);
+        if (messageText == null || userText == null || dateText == null) {
+            return;
+        }
+        messageText.setText(message.getContent());
+        super.set();
     }
 }

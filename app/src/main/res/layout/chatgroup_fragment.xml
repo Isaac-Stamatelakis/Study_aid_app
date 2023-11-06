@@ -5,14 +5,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:backgroundTint="@color/cornflower_blue"
+        android:text="Load More Messages"
+        android:textColor="@color/antiflash_white"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/chatgroup_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/chatgroup_messages"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ListView
         android:id="@+id/chatgroup_messages"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="600dp"
+        android:stackFromBottom="false"
+        android:transcriptMode="normal"
+        app:layout_constraintBottom_toTopOf="@+id/chatgroup_send_message"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/chatgroup_send_message" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button2" />
+
+    <TextView
+        android:id="@+id/chatgroup_empty_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="@string/so_empty_nsend_the_first_message"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/chatgroup_progress_bar"
+        app:layout_constraintEnd_toEndOf="@+id/chatgroup_messages"
+        app:layout_constraintStart_toStartOf="parent" />
     <EditText
+        android:backgroundTint="@color/black"
         android:id="@+id/chatgroup_send_message"
         android:layout_width="300dp"
         android:imeOptions="actionDone"
@@ -31,9 +59,18 @@
         android:layout_height="50dp"
         android:layout_margin="20dp"
         android:layout_marginStart="16dp"
-        android:src="@drawable/edit_icon"
+        android:src="@drawable/plus2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/chatgroup_progress_bar"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

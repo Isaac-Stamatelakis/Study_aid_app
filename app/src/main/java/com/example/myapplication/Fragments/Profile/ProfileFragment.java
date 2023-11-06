@@ -90,9 +90,7 @@ public class ProfileFragment extends Fragment {
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FriendRequestFragment friendRequestFragment = new FriendRequestFragment(user);
-                StaticHelper.switchFragment(getActivity().getSupportFragmentManager(),friendRequestFragment,null);
-
+                addFriendButtonClick();
             }
         });
 
@@ -102,6 +100,10 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    protected void addFriendButtonClick() {
+        FriendRequestFragment friendRequestFragment = new FriendRequestFragment(user);
+        StaticHelper.switchFragment(getActivity().getSupportFragmentManager(),friendRequestFragment,null);
+    }
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 

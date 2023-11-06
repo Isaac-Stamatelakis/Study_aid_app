@@ -8,28 +8,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AbsListView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.example.myapplication.CustomDocumentRetrieval;
 import com.example.myapplication.CustomQuery;
+import com.example.myapplication.Fragments.Classes.ClassSelectorFragment.ChatClassSelectorFragment;
+import com.example.myapplication.Fragments.Classes.ClassSelectorFragment.ShareStudyMaterialCSF;
+import com.example.myapplication.Fragments.Classes.StudyMaterial.DB.StudyMaterialRetriever;
+import com.example.myapplication.Fragments.Profile.User;
 import com.example.myapplication.Fragments.Social.ChatGroup.ChatGroup;
 import com.example.myapplication.Fragments.Social.Message.Message;
 import com.example.myapplication.Fragments.Social.Message.MessageArrayAdapter;
 import com.example.myapplication.Fragments.Social.Message.StudyMaterialMessage;
 import com.example.myapplication.Fragments.Social.Message.TextMessage;
 import com.example.myapplication.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.tabs.TabLayout;
+import com.example.myapplication.StaticHelper;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -37,12 +39,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ChatGroupFragment extends Fragment {
     protected final String TAG = "ChatGroupFragment";
@@ -52,10 +52,14 @@ public class ChatGroupFragment extends Fragment {
     protected ChatGroup chatGroup;
     protected EditText messageText;
     protected ListView messageListView;
+    protected Button viewMoreButton;
     protected MessageArrayAdapter messageArrayAdapter;
     protected ImageView shareStudyMaterialButton;
+    protected ProgressBar progressBar;
+    protected TextView emptyText;
     protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
     protected int messagesLoaded = 0;
+    protected boolean retrieving = false;
 
     public ChatGroupFragment(ChatGroup chatGroup) {
         this.chatGroup = chatGroup;
@@ -71,19 +75,25 @@ public class ChatGroupFragment extends Fragment {
         setViews(view);
         setViewListeners(view);
         chatGroup.setMessages(new ArrayList<>());
-        messageArrayAdapter = new MessageArrayAdapter(getContext(), new ArrayList<>(), chatGroup.getMemberNames(), getActivity().getSupportFragmentManager());
+
+        messageArrayAdapter = new MessageArrayAdapter(getContext(), chatGroup.getMessages(), getActivity().getSupportFragmentManager(),this);
         messageListView.setAdapter(messageArrayAdapter);
-        retrieveMessages(0,10);
+        retrieveLatestMessages(10);
         initChatDatabaseListener();
         return view;
 
 
     }
 
+
+
     protected void setViews(View view) {
         messageText = view.findViewById(R.id.chatgroup_send_message);
         messageListView = view.findViewById(R.id.chatgroup_messages);
         shareStudyMaterialButton = view.findViewById(R.id.chatgroup_share_studymaterial);
+        progressBar = view.findViewById(R.id.chatgroup_progress_bar);
+        viewMoreButton = view.findViewById(R.id.chatgroup_button);
+        emptyText = view.findViewById(R.id.chatgroup_empty_text);
     }
     protected void setViewListeners(View view) {
         messageText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -102,22 +112,53 @@ public class ChatGroupFragment extends Fragment {
                 shareStudyMaterial();
             }
         });
+        viewMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                retrieveLatestMessages(10);
+            }
+        });
+        emptyText.setVisibility(View.GONE);
+
     }
 
     protected void sendTextMessage(String messageText) {
-        TextMessage textMessage = new TextMessage(user_id, LocalDateTime.now(), messageText);
+        TextMessage textMessage = new TextMessage(new User(user_id), LocalDateTime.now(), messageText);
         chatGroup.addMessageToDB(textMessage, user_id, "text");
     }
-    protected void shareStudyMaterial() {
+    public void clearMessages() {
+        messagesLoaded = 0;
+        chatGroup.setMessages(new ArrayList<>());
 
+    }
+    protected void shareStudyMaterial() {
+        clearMessages();
+        ShareStudyMaterialCSF shareStudyMaterialCSF = new ShareStudyMaterialCSF(chatGroup);
+        StaticHelper.switchFragment(requireActivity().getSupportFragmentManager(),shareStudyMaterialCSF, null);
     }
     protected String getFragmentTag() {
         return this.TAG;
     }
 
-    protected void retrieveMessages(int startIndex, int endIndex) {
+    protected void retrieveLatestMessages(int amount) {
+        if (chatGroup.getMessageIDS().size() == 0) {
+            progressBar.setVisibility(View.GONE);
+            emptyText.setVisibility(View.VISIBLE);
+        } else {
+            emptyText.setVisibility(View.GONE);
+        }
+        if (retrieving) {
+            return;
+        }
+
+        retrieving = true;
+
         ArrayList<String> messageIDs = chatGroup.getMessageIDS();
-        if (startIndex >= messageIDs.size()) {
+        int startIndex = Math.max(messageIDs.size()-messagesLoaded-amount,0);
+        int endIndex = messageIDs.size()-messagesLoaded-1;
+        messagesLoaded += amount;
+
+        if (startIndex >= messageIDs.size() || startIndex < 0) {
             return;
         }
         ArrayList<String> partitionedMessageIDDs = new ArrayList<>();
@@ -126,60 +167,28 @@ public class ChatGroupFragment extends Fragment {
                 partitionedMessageIDDs.add(messageIDs.get(i));
             }
         }
+
         new MultiMessageRetriever(partitionedMessageIDDs).execute();
     }
-    protected Message processMessage(DocumentSnapshot snapshot) {
-        Object val = snapshot.get("type");
-        if (val == null) {
-            return null;
-        }
-        String type = (String) val;
-
-        String content = "";
-        val = snapshot.get("content");
-        if (val != null) {
-            content = (String) val;
-        }
-        String dateString = "";
-        LocalDateTime localDateTime = null;
-        val = snapshot.get("date");
-        if (val != null) {
-            dateString = (String) val;
-            localDateTime = LocalDateTime.parse(dateString, formatter);
-        }
-        String owner = "";
-        val = snapshot.get("owner");
-        if (val != null) {
-            owner = (String) val;
-        }
-        Message message = null;
-
-        switch (type) {
-            case "text":
-                message = new TextMessage(owner,localDateTime,content);
-                break;
-            case "studymaterial":
-                message = new StudyMaterialMessage(owner,localDateTime,content);
-                break;
-        }
-        return message;
-    }
     protected void displayMessages(ArrayList<Message> messageToAdd) {
+
+        retrieving = false;
+        progressBar.setVisibility(View.GONE);
         ArrayList<Message> sortedMessages = new ArrayList<>();
         while (messageToAdd.size() > 0) {
-            Message minMessage = messageToAdd.get(0);
+            Message maxMessage = messageToAdd.get(0);
             for (int j = 0; j < messageToAdd.size(); j++) {
-                if (messageToAdd.get(j).getDate().compareTo(minMessage.getDate()) < 0) {
-                    minMessage = messageToAdd.get(j);
+                if (messageToAdd.get(j).getDate().compareTo(maxMessage.getDate()) >= 0) {
+                    maxMessage = messageToAdd.get(j);
                 }
             }
-            sortedMessages.add(minMessage);
-            messageToAdd.remove(minMessage);
+            sortedMessages.add(maxMessage);
+            messageToAdd.remove(maxMessage);
         }
-
-        messageArrayAdapter.addAll(sortedMessages);
+        for (Message message : sortedMessages) {
+            chatGroup.addMessageToFront(message);
+        }
         messageArrayAdapter.notifyDataSetChanged();
-        messagesLoaded += sortedMessages.size();
     }
     protected void initChatDatabaseListener() {
         db.collection("Chats").document(chatGroup.getDbID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -194,7 +203,6 @@ public class ChatGroupFragment extends Fragment {
                     ArrayList<String> currentMessages = chatGroup.getMessageIDS();
                     for (String newMessage : newMessages) {
                         if (!currentMessages.contains(newMessage)) {
-                            Log.e("TEST",newMessage);
                             chatGroup.getMessageIDS().add(newMessage);
                             new MessageRetriever(TAG,newMessage).execute();
                         }
@@ -206,8 +214,18 @@ public class ChatGroupFragment extends Fragment {
         });
     }
 
+    /**
+     * Retrieves a message from the database
+     * i) retrieves document with messageID
+     * ii) retrieves user with ownerID
+     * iii) If message is a studymaterial message, retrieves studymaterial with content (studymaterialID)
+     */
     protected class MessageRetriever extends CustomDocumentRetrieval {
         protected String messageID;
+        protected Message message;
+        protected User user;
+        protected int additionalRetrievalAmount = 1;
+        protected int currentAdditionalRetrievals = 0;
         public MessageRetriever(String TAG, String messageID) {
             super(TAG);
             this.messageID = messageID;
@@ -218,15 +236,103 @@ public class ChatGroupFragment extends Fragment {
         }
         @Override
         protected void processSnapshot(DocumentSnapshot snapshot) {
-            Message message = processMessage(snapshot);
+            processMessage(snapshot);
+        }
+        protected void additionalRetrievalComplete() {
+            currentAdditionalRetrievals ++;
+            if (currentAdditionalRetrievals == additionalRetrievalAmount) {
+                messageReceived();
+            }
+        }
+        protected void messageReceived() {
             messageArrayAdapter.add(message);
+        }
+        protected void processMessage(DocumentSnapshot snapshot) {
+            Object val = snapshot.get("type");
+            if (val == null) {
+                return;
+            }
+            String type = (String) val;
+
+            String content = "";
+            val = snapshot.get("content");
+            if (val != null) {
+                content = (String) val;
+            }
+            String dateString = "";
+            LocalDateTime localDateTime = null;
+            val = snapshot.get("date");
+            if (val != null) {
+                dateString = (String) val;
+                localDateTime = LocalDateTime.parse(dateString, formatter);
+            }
+            String owner = "";
+            val = snapshot.get("owner");
+            if (val != null) {
+                owner = (String) val;
+            }
+
+            new MessageUserQuery(TAG,owner).execute();
+
+            switch (type) {
+                case "text":
+                    message = new TextMessage(null,localDateTime,content);
+                    break;
+                case "studymaterial":
+                    message = new StudyMaterialMessage(null,localDateTime,null);
+                    additionalRetrievalAmount ++;
+                    new MessageStudyMaterialRetriever(TAG,content).execute();
+                    break;
+            }
+        }
+
+
+        protected class MessageUserQuery extends CustomQuery {
+            protected String dbID;
+            protected User user = null;
+            public MessageUserQuery(String TAG, String dbID) {
+                super(TAG);
+                this.dbID = dbID;
+            }
+            @Override
+            protected Query generateQuery() {
+                return db.collection("Users").whereEqualTo("user_id",dbID);
+            }
+
+            @Override
+            protected void processSnapshot(QueryDocumentSnapshot snapshot) {
+                user = new User(dbID);
+                user.setUserToDocument(snapshot);
+            }
+
+            @Override
+            protected void queryComplete() {
+                message.setOwner(user);
+                additionalRetrievalComplete();
+            }
+        }
+        protected class MessageStudyMaterialRetriever extends StudyMaterialRetriever {
+
+            public MessageStudyMaterialRetriever(String TAG, String studyMaterialID) {
+                super(TAG, studyMaterialID);
+            }
+
+            @Override
+            protected void retrievalComplete() {
+
+                if (message instanceof StudyMaterialMessage) {
+                    ((StudyMaterialMessage) message).setStudyMaterial(studyMaterial);
+                } else {
+                    Log.e(TAG,"Tried to add studymaterial to non-StudyMaterialMessage");
+                }
+                additionalRetrievalComplete();
+            }
         }
     }
     protected class MultiMessageRetriever {
         protected ArrayList<String> messageIDs;
         protected ArrayList<Message> messages = new ArrayList<>();
         protected int currentMessage = 0;
-        protected int retrievedMessages = 0;
         public MultiMessageRetriever(ArrayList<String> messageIDs) {
             this.messageIDs = messageIDs;
         }
@@ -240,9 +346,9 @@ public class ChatGroupFragment extends Fragment {
         protected void retrieveCurrentMessage() {
             new MessageRetrievalForMulti(TAG,messageIDs.get(currentMessage)).execute();
         }
-        protected void singleRetrievalComplete() {
-            retrievedMessages++;
-            if (retrievedMessages == messageIDs.size()) {
+        protected void singleRetrievalComplete(Message message) {
+            messages.add(message);
+            if (messages.size() == messageIDs.size()) {
                 multiRetrievalComplete();
             }
         }
@@ -253,16 +359,13 @@ public class ChatGroupFragment extends Fragment {
             public MessageRetrievalForMulti(String TAG, String messageID) {
                 super(TAG, messageID);
             }
-            @Override
-            protected void processSnapshot(DocumentSnapshot snapshot) {
-                messages.add(processMessage(snapshot));
-            }
 
             @Override
-            protected void retrievalComplete() {
-                singleRetrievalComplete();
+            protected void messageReceived() {
+                singleRetrievalComplete(message);
             }
         }
     }
+
 
 }

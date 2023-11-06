@@ -45,15 +45,15 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class AddClassFragment extends Fragment {
-    ListView classList;
-    ArrayList<SchoolClass> classes;
-    ArrayList<SchoolClass> displayedClasses;
-    FirebaseFirestore db;
-    SchoolClassArrayAdapter classAdapter;
-    EditText searchBar;
-    Button manualAddButton;
-    Fragment thisFragment;
-    String user_id;
+    protected ListView classList;
+    protected ArrayList<SchoolClass> classes;
+    protected ArrayList<SchoolClass> displayedClasses;
+    protected FirebaseFirestore db;
+    protected SchoolClassArrayAdapter classAdapter;
+    protected EditText searchBar;
+    protected Button manualAddButton;
+    protected Fragment thisFragment;
+    protected String user_id;
     private final int requiredCountToShow = 2;
     private static String TAG = "AddClassFragment";
 
@@ -69,8 +69,6 @@ public class AddClassFragment extends Fragment {
 
         getClasses();
 
-        //classes.add(new SchoolClass("301",null,"CMPUT"));
-        //classes.add(new SchoolClass("466",null,"CMPUT"));
         classAdapter = new SchoolClassArrayAdapter(this.getActivity(),displayedClasses);
         classList.setAdapter(classAdapter);
 
@@ -310,6 +308,7 @@ public class AddClassFragment extends Fragment {
     }
 
     public void addUserClass(SchoolClass schoolClass) {
+        /*
         // Check database for name and subject duplicates
         Query userClassesQuery = db.collection("Classes")
                 .whereEqualTo("Subject", schoolClass.getSubject())
@@ -321,7 +320,8 @@ public class AddClassFragment extends Fragment {
                 if (task.isSuccessful()) {
                     AggregateQuerySnapshot snapshot = task.getResult();
                     if (snapshot.getCount() > 0) {
-                        AggregateQuery userSectionQuery = userClassesQuery.whereEqualTo("Section", schoolClass.getSection()).count();
+                        AggregateQuery userSectionQuery = userClassesQuery.whereEqualTo("Section", schoolClass.getSection()
+                        ).count();
                         userSectionQuery.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<AggregateQuerySnapshot> task2) {
@@ -363,11 +363,17 @@ public class AddClassFragment extends Fragment {
                     }
                     // User doesn't already have class
                     else {
-                        schoolClass.addClassToDB(user_id);
+
                     }
                 }
             }
         });
+        */
+        schoolClass.addClassToDB(user_id);
+        displayedClasses.remove(schoolClass);
+        classAdapter.notifyDataSetChanged();
+
+
     }
     /*
     Swaps the section of a class.

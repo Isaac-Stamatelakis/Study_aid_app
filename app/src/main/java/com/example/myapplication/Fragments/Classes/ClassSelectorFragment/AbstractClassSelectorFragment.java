@@ -5,6 +5,7 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CalendarView;
 import android.widget.ListView;
 
@@ -37,21 +38,43 @@ public abstract class AbstractClassSelectorFragment extends Fragment {
     CalendarView calendarView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.class_selector_fragment, container, false);
-        classList = view.findViewById(R.id.class_fragment_class_list);
-        calendarView = view.findViewById(R.id.class_calender);
+        View view = inflateView(inflater,container);
 
+        setViews(view);
+        setViewListeners(view);
         user_id = (Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID));
         db = FirebaseFirestore.getInstance();
 
         classes = new ArrayList<SchoolClass>();
-        classAdapter = new SchoolClassArrayAdapter(this.getActivity(),classes);
-        classList.setAdapter(classAdapter);
-        addClassButton = view.findViewById(R.id.CLASS_FRAGMENT_add_class_button);
+        initAdapter();
+
         getClassFromDB();
         return view;
 
 
+    }
+    protected void setViews(View view) {
+        classList = view.findViewById(R.id.class_fragment_class_list);
+        calendarView = view.findViewById(R.id.class_calender);
+        addClassButton = view.findViewById(R.id.CLASS_FRAGMENT_add_class_button);
+    }
+    protected void setViewListeners(View view) {
+        classList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                classSelected(classAdapter.getItem(position));
+            }
+        });
+    }
+    protected void classSelected(SchoolClass schoolClass) {
+
+    }
+    protected void initAdapter() {
+        classAdapter = new SchoolClassArrayAdapter(this.getActivity(),classes);
+        classList.setAdapter(classAdapter);
+    }
+    protected View inflateView(LayoutInflater inflater, ViewGroup container) {
+        return inflater.inflate(R.layout.class_selector_fragment, container, false);
     }
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -62,8 +85,8 @@ public abstract class AbstractClassSelectorFragment extends Fragment {
         super.onDestroyView();
     }
 
-    private void getClassFromDB() {
-        Query userClassQuery = db.collection("Classes").whereEqualTo("user_id",user_id);
+    protected void getClassFromDB() {
+        Query userClassQuery = getClassQuery();
         userClassQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -71,12 +94,16 @@ public abstract class AbstractClassSelectorFragment extends Fragment {
                 for (QueryDocumentSnapshot doc : value) {
                     SchoolClass schoolClass = new SchoolClass((String) doc.get("Number"), (String) doc.get("Section"), (String) doc.get("Subject"));
                     schoolClass.setDbID(doc.getId());
+                    schoolClass.setInstitution((String) doc.get("Institution"));
                     classes.add(schoolClass);
                 }
                 classAdapter.notifyDataSetChanged();
 
             }
         });
+    }
+    protected Query getClassQuery() {
+        return db.collection("Classes").whereEqualTo("user_id",user_id);
     }
 
 

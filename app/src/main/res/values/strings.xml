@@ -34,4 +34,6 @@
     <string name="undefined_name">UNDEFINED NAME</string>
     <string name="undefined_type">UNDEFINED TYPE</string>
     <string name="no_friend_requests">No Friend Requests :(</string>
+    <string name="so_empty_nsend_the_first_message">So empty...\nBe the one to\nsend the first message!</string>
+    <string name="select_a_class">Select a Class</string>
 </resources>

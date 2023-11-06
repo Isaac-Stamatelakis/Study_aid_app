@@ -7,10 +7,12 @@
     android:orientation="vertical">
 
     <Spinner
+        android:backgroundTint="@color/persian_indigo"
+        android:background="@color/cornflower_blue"
+        android:layout_marginTop="100dp"
         android:id="@+id/edit_profile_spinner"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="60dp"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="30dp"
         android:spinnerMode="dropdown"
@@ -106,6 +108,8 @@
         android:gravity="center"
        >
         <Button
+            android:backgroundTint="@color/UT_orange"
+            android:textColor="@color/antiflash_white"
             android:id="@+id/edit_profile_cancel_button"
             android:text="@string/edit_profile_cancel"
             android:layout_width="wrap_content"
@@ -116,6 +120,8 @@
             />
 
         <Button
+            android:backgroundTint="@color/cornflower_blue"
+            android:textColor="@color/antiflash_white"
             android:id="@+id/edit_profile_save_button"
             android:text="@string/edit_profile_save"
             android:layout_marginLeft="30dp"
